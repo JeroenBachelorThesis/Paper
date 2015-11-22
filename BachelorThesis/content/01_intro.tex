@@ -8,11 +8,24 @@ There are three major aspects that can be analyzed: the syntax, the semantic mod
 The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
 The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type ‘ClassDeclarationSyntax’)
 
-   public class MyClass { }
+\lstset{style=sharpc}
+\begin{lstlisting}
+public class MyClass { }
+\end{lstlisting}
+
 	
 while in this code, the ‘MyClass’ will be interpreted as an ‘IdentifierNameSyntax’:
 
-   var obj = new MyClass();
+   
+\lstset{style=sharpc}
+\begin{lstlisting}
+var obj = new MyClass();
+int x = 5;
+if(x == 5)
+{
+	Console.WriteLine("lol");
+}
+\end{lstlisting}  
 	
 This shows us that the semantic model knows the meaning of each syntactic construct regarding its context. This allows for more extensive analysis since we can now also analyze the relationship between specific symbols. 
 Last but not least: the third aspect of source code that we can analyze is its data flow in a specific region. The ‘region’ here refers to either a method body or a field initializer. This tells us whether or a variable is read from/written to inside or outside the specified region, what the local variables in this region are, etc. This is a step above “simple” semantic analysis: rather than interpreting the meaning of a symbol in the code, we can now analyze how certain symbols are interacted with without actually executing the code itself.
