@@ -5,7 +5,7 @@
 \label{sec:intro-what}
 
 There are three major aspects that can be analyzed: the syntax, the semantic model and the data flow. 
-The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C# Language Specification. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
+The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
 The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type ‘ClassDeclarationSyntax’)
 
    public class MyClass { }
@@ -41,8 +41,8 @@ we now receive “2” as a result. This is an extremely powerful (albeit curren
 \label{sec:intro-why}
 
 Now that we know what Roslyn does it’s important to realize what gap is being closed. After all, something has to be special about Roslyn if it is to receive such widespread attention.
-Roslyn introduced two very big changes to the community: the C# compiler’s language changed and it has now become open-source. Prior to Roslyn, the C# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was a black box. By open-sourcing Roslyn and placing it on CodePlex and afterwards Github, suddenly this box was opened and everybody could look at the internals of how a high-end compiler is written.
-This brings us to the other big change: because Roslyn is written in C# rather than C++, the C# compiler is now able to bootstrap itself. This means that Roslyn can compile itself in C# to compile the next versions of the Roslyn compiler! The process is simple: Roslyn is compiled using the old C++ compiler after which that newly created compiler re-compiles the Roslyn codebase and suddenly you have a C# compiler that is written in C#. 
+Roslyn introduced two very big changes to the community: the C\# compiler’s language changed and it has now become open-source. Prior to Roslyn, the C\# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was a black box. By open-sourcing Roslyn and placing it on CodePlex and afterwards Github, suddenly this box was opened and everybody could look at the internals of how a high-end compiler is written.
+This brings us to the other big change: because Roslyn is written in C\# rather than C++, the C\# compiler is now able to bootstrap itself. This means that Roslyn can compile itself in C\# to compile the next versions of the Roslyn compiler! The process is simple: Roslyn is compiled using the old C++ compiler after which that newly created compiler re-compiles the Roslyn codebase and suddenly you have a C\# compiler that is written in C\#. 
 An added benefit of rewriting the compiler is the fact you can “discard” the older one. [Fleshing out needed]
 
 \section{Positivity of an open compiler}
