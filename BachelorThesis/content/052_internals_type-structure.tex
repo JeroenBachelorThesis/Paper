@@ -1,8 +1,28 @@
 \section{Type structure}
 \label{sec:type-structure}
 
+At its core, Roslyn creates tree representations from any given piece of code. Whether this concerns a single statement or an entire class doesn't matter -- in the end, everything is reduced to a tree data structure. We can distinguish 2 different kinds of elements that make up the tree and a 3rd element that augments additional information.
+
 \subsection{Syntax Tree}
 \label{sec:syntax-tree}
+
+The syntax tree in itself is the starting point from which a lot of aspects start or end: in a CodeFix you can end up replacing the original tree with the modified one while it might as well be the starting point with which you interpret plain text as something you can inspect.
+
+Creating a syntax tree can be as easy as parsing plain text:
+
+\lstset{style=csharp, caption={}}
+\begin{lstlisting}
+var tree = CSharpSyntaxTree.ParseText(@"
+public class Sample
+{
+}");
+\end{lstlisting}
+
+which will result in the following tree:
+
+[Image of syntax tree]
+
+A syntax tree represents at the highest level a single top-level type (class or struct) with all its containing members -- fields, methods and nested types. Multiple syntax trees can be grouped in a compilation. It is however not a requirement to represent a type when parsing a syntax tree: any kind of statement can be parsed and represented in a syntax tree. In the end, every syntax node represents a tree of itself. This idea of trees comprised of other trees is what enables interesting performance optimizations (more on that later). 
 
 \subsection{Syntax Node}
 \label{sec:syntax-node}
