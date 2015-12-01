@@ -12,8 +12,10 @@ Another consideration stemming from this is performance related: node objects wi
 \label{sec:rg-trees-solution}
 
 The solution to these problems came in the form of the so-called red-green trees. The basic idea is straightforward: Roslyn will create two trees, a red and a green one. The green nodes will contain "vague" information such as their width instead of their start- and end-position and they won't keep track of their parent. This tree is built from the bottom-up: this means that when a node is built, it knows about its children.
-When an edit occurs two things happen: a green node is created alongside a trivial red node (a node without a position or parent). The key here is that this red node also contains a reference to the underlying green node\footnote{http://source.roslyn.codeplex.com/\#Microsoft.CodeAnalysis/Syntax/SyntaxNode.cs,41} which will allow us to construct a red node at \textit{some point in time} using this green node's data.  \\
-The emphasis is very important here: a red node is materialized lazily -- this means that the red tree itself is only created when it's actually requested. For example when you browse through code in the Visual Studio IDE, it will create these red trees for each part of the code that the user can actually see and which needs highlighting. Code that the user cannot see doesn't need to be highlighted and as such does not need to be materialized into a red tree.
+When an edit occurs two things happen: a green node is created alongside a trivial red node (a node without a position or parent). The key here is that this red node also contains a reference to the underlying green node\footnote{http://source.roslyn.codeplex.com/\#Microsoft.CodeAnalysis/Syntax/SyntaxNode.cs,41} which will allow us to construct a red node at \textit{some point in time} using this green node's data.  
+The emphasis is very important here: a red node is materialized lazily -- this means that the red tree itself is only created when it's actually requested. For example when you browse through code in the Visual Studio IDE\footnote{IDE: Integrated Development Environment, the editor in which you modify source files}, it will create these red trees for each part of the code that the user can actually see and which needs highlighting. Code that the user cannot see doesn't need to be highlighted and as such does not need to be materialized into a red tree.
+
+\medskip
 
 When the red tree is built, Roslyn works with a top-down approach. This allows us to discover the exact location of every node by starting from position 0 and incrementing the position by the width of each subsequent node which we store in every red node's underlying green node. We also know the underlying green node's children because we built that green node from the bottom-up. This provides us with all the information we need to create a new red node at a certain position with a given parent and the necessary contextual information. Indeed, when we look at the constructor of a 'SyntaxNode' (which is what we consider a 'red node') we can see it has the following definition:
 
@@ -25,6 +27,8 @@ internal SyntaxNode(GreenNode green,
 \end{lstlisting}
 
 This perfectly displays the principle we talked about of creating a red node based on its parent, the position (which is calculated from the cumulative width of elements preceding it) and the associated green node.
+
+\medskip
 
 A performance consideration worth mentioning here is the fact that generation of the red tree is cancelled when an edit occurs. Any analysis performed until that moment is outdated (or possible to be outdated) so there is no point in finishing it up. The red tree at this point is discarded and a new green tree is generated based on the newly typed characters. In reality this green tree will be resolved into a red tree \textit{almost} immediately -- there is a slight delay between typing and generation of the red tree so there won't be a constant stream of newly created and aborted trees while the user is typing rapidly.
 

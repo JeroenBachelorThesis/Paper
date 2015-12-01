@@ -18,9 +18,14 @@ public class Sample
 }");
 \end{lstlisting}
 
-which will result in the following tree:
+which will result in the tree as shown in figure \ref{fig:tree-structure-class-definition}
 
-[Image of syntax tree]
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.50]{tree-structure-class-definition}
+\caption{Syntax tree representation of a class definition}
+\label{fig:tree-structure-class-definition}
+\end{figure}
 
 A syntax tree represents at the highest level a single top-level type (class or struct) with all its containing members -- fields, methods and nested types. Multiple syntax trees can be grouped in a compilation. It is however not a requirement to represent a type when parsing a syntax tree: any kind of statement or expression can be parsed and represented in a syntax tree. In the end, every syntax node represents a tree of itself. This idea of trees comprised of other trees is what enables interesting performance optimizations (more on that later). 
 
