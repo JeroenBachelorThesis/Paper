@@ -5,7 +5,7 @@
 \label{sec:intro-what}
 
 There are three major aspects that can be analyzed: the syntax, the semantic model and the data flow. 
-The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
+The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
 The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type ‘ClassDeclarationSyntax’)
 
 \lstset{style=csharp, caption={Interpretation of a class declaration}}
@@ -80,13 +80,13 @@ Opening the compiler to the public brought a lot of good things, not in the leas
 There are many more benefits to open-sourcing:
 
 \begin{itemize}
-	\item The amount of scrutiny the code goes through is multiplied now that the entire developer community has access to it. [Needs citation]
+	\item The amount of scrutiny the code goes through is greater now that the entire developer community has access to it.
 	
 	\item Developers themselves can now more easily learn how compilers work in a language they’re familiar with. Writing compilers has become more and more a “far-from-my-bed-show” with the rise of high-level languages – this might (re-)introduce some interest into such low-level concepts.
 	
 	\item It also facilitates advanced users by allowing them to inspect the bare bones of the compiler when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this Stack overflow question titled “Enums in lambda expressions are compiled differently; consequence of improvements?” where a user noticed that identical code compiles differently on the newer compiler version.
 	
-	\item Last but not least it simply provides a very robust and efficient parser that external parties now won’t have to develop themselves. This doesn’t necessarily mean that those tools should switch to the Roslyn platform but they might incorporate some ideas of it in their own parser (as is the case with ReSharper, a popular code-refactoring tool[https://blog.jetbrains.com/dotnet/2014/04/10/resharper-and-roslyn-qa/]).
+	\item Last but not least it simply provides a very robust and efficient parser that external parties now won’t have to develop themselves. This doesn’t necessarily mean that those tools should switch to the Roslyn platform but they might incorporate some ideas of it in their own parser (as is the case with ReSharper, a popular code-refactoring tool).\cite{Gorohovsky2014}
 
 \end{itemize}
 
@@ -96,7 +96,7 @@ There are many more benefits to open-sourcing:
 
 Separately, providing APIs to your compiler brings benefits with it as well. Because of the broad support of APIs for all kinds of aspects of a compilation’s lifetime, a very convenient service is created where external parties can easily hook into and create their own diagnostics using the information that comes straight from the compiler. This encourages new tools aimed at the platform since the hassle of writing your own parser is removed – developers can go straight to implementing business logic. 
 
-On top of that, the “native” support means that there is a seamless integration with Visual Studio, Microsoft’s own IDE (Integrated Development Environment). This integration allows you to use the results of your diagnostics to be displayed and used directly inside of Visual Studio rather than needing to build a third-party tool or a plugin.
+On top of that, the “native” support means that there is a seamless integration with Visual Studio, Microsoft’s own IDE\footnote{IDE: Integrated Development Environment, the editor in which you modify source files}. This integration allows you to use the results of your diagnostics to be displayed and used directly inside of Visual Studio rather than needing to build a third-party tool or a plugin.
 
 This is the essence of why Roslyn is regarded as “Compiler as a Service”.
 

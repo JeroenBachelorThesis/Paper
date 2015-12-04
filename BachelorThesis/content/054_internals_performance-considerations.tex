@@ -1,6 +1,10 @@
 \section{Performance considerations}
 \label{sec:performance}
 
+Performance is an integral aspect of any application and as such Roslyn doesn't escape from it either. It's not just about compiling an assembly as fast as possible: that's just one of the usecases in which Roslyn is used. Think about other scenarios such as getting quick intellisense\footnote{Intellisense: context-aware hints as you type} or fluent syntax highlighting of text as you scroll but also affects other performance aspects such as the memory impact.
+
+In this section we will look at a handful of techniques the Roslyn team uses to optimize the platform. These are general approaches that often apply their ideas in several areas of the codebase, sometimes through a common resource. This should indicate that these are often optimizations at a high level rather than very specific single-use optimizations. 
+
 \subsection{Concurrency}
 \label{sec:concurrency}
 
