@@ -32,10 +32,10 @@ A syntax tree represents at the highest level a single top-level type (class or 
 Syntax trees have a few very important properties:
 
 \begin{itemize}
-	\item Full fidelity -- The guarantee that every character, whitespace, comment, line ending, etc from the source code is represented in the syntax tree
-	\item Round-trippable -- Following out of the above: translating the source code to a syntax tree and back results in exactly the same code
-	\item Code as written, not as executed -- When you use the 'async' and 'await' keywords it will represent these keywords in the syntax tree and not the state machine that the compiler generates out of it
-	\item Immutable -- Every syntax tree is immutable. This allows for thread-safe operations since everything handles its own "copy" of the syntax tree anyway
+	\item Full fidelity -- The guarantee that every character, whitespace, comment, line ending, etc from the source code is represented in the syntax tree.
+	\item Round-trippable -- Following from the above: translating the source code to a syntax tree and back results in exactly the same code.
+	\item Code as written, not as executed -- When you use the \verb|async| and \verb|await| keywords it will represent these keywords in the syntax tree and not the state machine that the compiler generates from it.
+	\item Immutable -- Every syntax tree is immutable. This allows for thread-safe operations since everything handles its own "copy" of the syntax tree anyway.
 \end{itemize}
 
 \subsection{Syntax Node}
@@ -53,14 +53,14 @@ Syntax nodes are defined in the Syntax.xml\footnote{https://github.com/dotnet/ro
 Syntax tokens are what make up the individual, small pieces of the code. Whereas syntax nodes mainly represent the syntactic constructs of the language, syntax tokens are the building blocks that these syntactic constructs consist of.
 A syntax token can be a keyword, identifier, literal and punctuation and only exists as a leaf in the tree: it will never be the parent of another node or token.
 
-Contrary to syntax nodes, syntax tokens are not represented by separate classes. Instead, a single struct exists which can be differentiated based on its 'Kind' property. 
+Contrary to syntax nodes, syntax tokens are not represented by separate classes. Instead, a single struct exists which can be differentiated based on its \verb|Kind| property. 
 
 [Look it up]
 
 \subsection{Syntax Trivia}
 \label{sec:syntax-trivia}
 
-The last aspect of the tree is the syntax trivia. This is slightly misleading because it's not actually a part of the tree: it is stored as a property on a syntax token. This stems from the idea that syntax tokens could not have child nodes and as such it is implemented by adding it to a token's 'LeadingTrivia' and 'TrailingTrivia' properties. 
+The last aspect of the tree is the syntax trivia. This is slightly misleading because it's not actually a part of the tree: it is stored as a property on a syntax token. This stems from the idea that syntax tokens could not have child nodes and as such it is implemented by adding it to a token's \verb|LeadingTrivia| and \verb|TrailingTrivia| properties. 
 
 Syntax trivia is the rest of the source code with no actual semantic meaning: comments, whitespace, newlines, etc. Important to note are preprocessing directives: these are also considered trivia.
 

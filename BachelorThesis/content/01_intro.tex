@@ -6,7 +6,7 @@
 
 There are three major aspects that can be analyzed: the syntax, the semantic model and the data flow. 
 The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
-The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type ‘ClassDeclarationSyntax’)
+The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type \verb|ClassDeclarationSyntax|)
 
 \lstset{style=csharp, caption={Interpretation of a class declaration}}
 \begin{lstlisting}
@@ -14,7 +14,7 @@ public class MyClass { }
 \end{lstlisting}
 
 	
-while in this code, the ‘MyClass’ will be interpreted as an ‘IdentifierNameSyntax’:
+while in this code, the \verb|MyClass| will be interpreted as an \verb|IdentifierNameSyntax|:
 
    
 \lstset{style=csharp, caption={Interpretation of an object instantiations}}
@@ -36,7 +36,7 @@ For example consider the following method:
 
 \end{lstlisting}
 	
-Analyzing this method’s data flow and looking at the ‘DataFlowAnalysis.AlwaysAssigned’ property, would tell us that only 1 local here would be always assigned. However if we now alter the above code to this:
+Analyzing this method’s data flow and looking at the \verb|DataFlowAnalysis.AlwaysAssigned| property, would tell us that only 1 local here would be always assigned. However if we now alter the above code to this:
 
 \lstset{style=csharp, caption={A method with conditional assignments}}
 \begin{lstlisting}
@@ -84,7 +84,7 @@ There are many more benefits to open-sourcing:
 	
 	\item Developers themselves can now more easily learn how compilers work in a language they’re familiar with. Writing compilers has become more and more a “far-from-my-bed-show” with the rise of high-level languages – this might (re-)introduce some interest into such low-level concepts.
 	
-	\item It also facilitates advanced users by allowing them to inspect the bare bones of the compiler when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this Stack overflow question titled “Enums in lambda expressions are compiled differently; consequence of improvements?” where a user noticed that identical code compiles differently on the newer compiler version.
+	\item It also facilitates advanced users by allowing them to inspect the bare bones of the compiler when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this Stack overflow question titled “Why does Roslyn crash when trying to rewrite this lambda?”\footnote{http://stackoverflow.com/a/34085687/1864167} where a user noticed that identical code compiles differently on the newer compiler version. Merely hours later, another user had identified the issue, discovered the offending commit in the Roslyn repository and submitted a PR with a fix.
 	
 	\item Last but not least it simply provides a very robust and efficient parser that external parties now won’t have to develop themselves. This doesn’t necessarily mean that those tools should switch to the Roslyn platform but they might incorporate some ideas of it in their own parser (as is the case with ReSharper, a popular code-refactoring tool).\cite{Gorohovsky2014}
 

@@ -17,7 +17,7 @@ The emphasis is very important here: a red node is materialized lazily -- this m
 
 \medskip
 
-When the red tree is built, Roslyn works with a top-down approach. This allows us to discover the exact location of every node by starting from position 0 and incrementing the position by the width of each subsequent node which we store in every red node's underlying green node. We also know the underlying green node's children because we built that green node from the bottom-up. This provides us with all the information we need to create a new red node at a certain position with a given parent and the necessary contextual information. Indeed, when we look at the constructor of a 'SyntaxNode' (which is what we consider a 'red node') we can see it has the following definition:
+When the red tree is built, Roslyn works with a top-down approach. This allows us to discover the exact location of every node by starting from position 0 and incrementing the position by the width of each subsequent node which we store in every red node's underlying green node. We also know the underlying green node's children because we built that green node from the bottom-up. This provides us with all the information we need to create a new red node at a certain position with a given parent and the necessary contextual information. Indeed, when we look at the constructor of a \verb|SyntaxNode| (which is what we consider a 'red node') we can see it has the following definition:
 
 \lstset{style=csharp, caption={Constructing a (red) SyntaxNode}}
 \begin{lstlisting}
