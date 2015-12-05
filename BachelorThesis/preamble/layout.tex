@@ -18,6 +18,15 @@
 % Computer Modern
 \renewcommand{\familydefault}{\sfdefault}
 
+%% TODO: not working yet
+\lstnewenvironment{code}[1][]%
+{
+   \noindent
+   \minipage{\linewidth} 
+   \vspace{0.5\baselineskip}
+   \lstset{style=csharp,#1}}
+{\endminipage}
+
 \lstdefinestyle{csharp}{
 	language=[sharp]C, 
 	frame=lr,

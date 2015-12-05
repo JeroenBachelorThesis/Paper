@@ -15,7 +15,7 @@ When you think of performance, concurrency is often one of the first aspects tha
 \subsubsection{Source parsing}
 \label{sec:concur-source-parsing}
 
-Every file containing source code is parsed independently of any other files. The file is parsed sequentially (from top to bottom) and multiple files can be parsed at once.%\cite{Sadov2014}
+Every file containing source code is parsed independently of any other files. The file is parsed sequentially (from top to bottom) and multiple files can be parsed at once.\cite{Sadov2014}
 
 \subsubsection{Symbol binding }
 \label{sec:concur-symbol-binding}
@@ -55,17 +55,18 @@ class StartUp
 		b.Method();
 	}
 }
+\end{lstlisting}
 
-When we bind 'SubType' we have to bind 'BaseType' as well because, as is indicated, there might be a semantical dependency: we have to know, for example, whether that 'override' keyword is appropriate there. This is not a problem when there is no explicit base type involved: we know the base type is just 'System.Object' which is likely already bound and as such there are no other types we have to investigate. For this reason we can bind unrelated symbols in no specific order.
+When we bind \verb|SubType| we have to bind \verb|BaseType| as well because, as is indicated, there might be a semantical dependency: we have to know, for example, whether that \verb|override| keyword is appropriate there. This is not a problem when there is no explicit base type involved: we know the base type is just \verb|System.Object| which is likely already bound and as such there are no other types we have to investigate. For this reason we can bind unrelated symbols in no specific order.
 
-We can say there is "implicit partial ordering".%\cite{Sadov2014}
+\noindent We can say there is "implicit partial ordering".\cite{Sadov2014}
 
 \subsubsection{Method body compilation }
 \label{sec:concur-symbol-binding}
 
 Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should emit the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in Chapter \ref{sec:deterministic-builds}. 
 
-Important to note is that method bodies are not emitted if there were any declaration errors. If that is the case, only binding is done for those aspects that can help in diagnosing the issue.%\cite{Sadov2014}
+Important to note is that method bodies are not emitted if there were any declaration errors. If that is the case, only binding is done for those aspects that can help in diagnosing the issue.\cite{Sadov2014}
 
 
 \subsection{Small nodes}

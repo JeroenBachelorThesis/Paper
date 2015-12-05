@@ -32,5 +32,5 @@ This perfectly displays the principle we talked about of creating a red node bas
 
 A performance consideration worth mentioning here is the fact that generation of the red tree is cancelled when an edit occurs. Any analysis performed until that moment is outdated (or possible to be outdated) so there is no point in finishing it up. The red tree at this point is discarded and a new green tree is generated based on the newly typed characters. In reality this green tree will be resolved into a red tree \textit{almost} immediately -- there is a slight delay between typing and generation of the red tree so there won't be a constant stream of newly created and aborted trees while the user is typing rapidly.
 
-The colours "red" and "green" have no particular meaning -- they were simply the two colours used to describe the idea on the Roslyn team's blackboard when designing this approach\cite{Lippert2012}.
+The colours "red" and "green" have no particular meaning -- they were simply the two colours used to describe the idea on the Roslyn team's blackboard when designing this approach.\cite{Lippert2012}
 
