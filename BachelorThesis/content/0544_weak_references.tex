@@ -1,0 +1,62 @@
+\subsection{Weak references}
+\label{sec:weak-references}
+
+\epigraph{A weak reference, simply put, is a reference that isn't strong enough to force an object to remain in memory. Weak references allow you to leverage the garbage collector's ability to determine reachability for you, so you don't have to do it yourself.}
+{\textit{Ethan Nicholas \\ \footnotesize{Understanding Weak References\protect\footnotemark}}}
+
+\footnotetext{http://weblogs.java.net/blog/enicholas/archive/2006/05/understanding\_w.html}
+
+As we talked about before in section \ref{sec:small-nodes}, C\# is a managed language that manages its memory usage with the GC. In essence it boils down to this: if an object has no references it is eligible for Garbage Collection and the GC will mark it as such so it can be cleaned up for the next iteration. You might have guessed by the title of the section that the above explanation should actually specify it as \textit{strong references} rather than just \textit{references}. A "strong reference" is the default reference type we typically use when referencing another object.
+
+A \verb|WeakReference| is a construct that allows us to reference an object but if the GC decides to clean up that reference it can do so without a problem. You notice from this description that it is perfectly suited for a caching mechanism: that's basically the same result as when we create a cache with a certain size -- the size is supposed to prevent us from reaching memory issues.
+
+In section \ref{sec:rg-trees-solution} we already talked shortly about syntax highlighting in the IDE: scrolling through the editor will cause the syntax tree to become materialized which means creating new objects to represent those syntactic constructs. However once a part of the tree leaves the window of the user there is no point in keeping it materialized anymore since the user can't see it anyway. At this point you want those unnecessary materialized nodes to be garbage collected but there is one major problem: nodes are referenced by their parent and its children. If we would use traditional strong references we would never be able to collect any of these objects.
+
+One major area in which this technique is used is when it comes to a method body. Method bodies are in essence a group of statements. While it can be very useful to have information such as the method's definition available while programming, the exact contents of that method are less important -- this makes it a perfect target to use weak references.
+
+This is implemented in the \verb|SyntaxList.WithManyWeakChildren| type. It works very straightforward: by storing an array with as type a \verb|WeakReference<SyntaxNode>| we are already done: now these syntax nodes will be able to be GC'd if the GC marks them and no strong references exist to those particular nodes.
+
+\lstset{style=csharp, caption={SyntaxList.WithManyWeakChildren.\_children}}
+\begin{lstlisting}
+private readonly 
+	ArrayElement<WeakReference<SyntaxNode>>[] _children;
+\end{lstlisting}
+
+\noindent In the base type \verb|SyntaxList.WithManyChildrenBase| we can see how the creation of the red node is delegated:
+
+\lstset{style=csharp, caption={SyntaxList.WithManyWeakChildrenBase.CreateRed}}
+\begin{lstlisting}
+internal override SyntaxNode CreateRed(SyntaxNode parent, 
+																			 int position)
+{
+	var p = parent;
+	if (p != null && p is CSharp.Syntax.BlockSyntax)
+	{
+		var gp = p.Parent;
+		if (gp != null && 
+				(gp is CSharp.Syntax.MemberDeclarationSyntax || 
+				 gp is CSharp.Syntax.AccessorDeclarationSyntax))
+		{
+			return new 
+				SyntaxList.WithManyWeakChildren(this, 
+																				parent, 
+																				position);
+		}
+	}
+
+	if (this.SlotCount > 1 && HasNodeTokenPattern())
+	{
+		return new 
+			SyntaxList.SeparatedWithManyChildren(this, 
+																					 parent, 
+																					 position);
+	}
+	else
+	{
+		return new 
+			SyntaxList.WithManyChildren(this, 
+																	parent, 
+																	position);
+	}
+}
+\end{lstlisting}

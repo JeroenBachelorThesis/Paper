@@ -1,0 +1,107 @@
+\subsection{Object pooling}
+\label{sec:object-pooling}
+
+In chapter \ref{sec:object-reuse} we've discussed a specific approach at minimizing the amount of objects created. In this section we will take a look at a more general implementation of this idea. While nodes and tokens are at the very core of the Roslyn code base, they're not the only objects we'll create. 
+
+When creating a lexer, one of the major tasks you're performing is reading source code and creating strings. If you would intermittently concatenate strings, this would increase memory pressure by a lot: every concatenation using \verb|+| creates a new string but you might only be interested in the result\footnote{https://msdn.microsoft.com/en-us/library/2839d5h5(v=vs.110).aspx}. 
+However creating a new \verb|StringBuilder| object every time you want to concatenate strings is an expensive operation as well: since a lot of string concatenation is done, a lot of distinct \verb|StringBuilder| instances will be created and you again have the issue as described before. The solution here is to take pooling one step further: every type can be pooled through the \verb|ObjectPool<T>| class.\parencite{Warren2014} This provides a generic implementation of the object pooling pattern and will be used through intermediate classes.
+
+An accurate description of this class' workings can be found in its documentation\footnote{\url{https://github.com/dotnet/roslyn/blob/b908b05b41d3adc3b5e81f8cf2d0055c13e4a1f6/src/Compilers/Core/SharedCollections/ObjectPool\%601.cs}}:
+
+\begin{quotation}
+Generic implementation of object pooling pattern with predefined pool size limit. The main
+purpose is that limited number of frequently used objects can be kept in the pool for
+further recycling.
+
+Notes: 
+
+1) it is not the goal to keep all returned objects. Pool is not meant for storage. If there
+   is no space in the pool, extra returned objects will be dropped.
+
+2) it is implied that if object was obtained from a pool, the caller will return it back in
+   a relatively short time. Keeping checked out objects for long durations is ok, but 
+   reduces usefulness of pooling. Just new up your own.
+
+Not returning objects to the pool in not detrimental to the pool's work, but is a bad practice. 
+Rationale: 
+   If there is no intent for reusing the object, do not use pool - just use "new". 
+\end{quotation}
+
+An interesting addition here is the implementation of \verb|SharedPools|. As the name indicates, this is a class that manages the sharing of object pools. There are two ways to use this class:
+
+\begin{itemize}
+\item As a single, standalone pool
+
+This does not share the pool but instead just makes it easier to create your object pools. For this purpose you can choose between a small pool (20 elements) and a big pool (100 elements). For example in the case of a small pool you call
+
+\lstset{style=csharp, caption={SharedPools.Default<T>}}
+\begin{lstlisting}
+public static ObjectPool<T> Default<T>() 
+																where T : class, 
+																					new()
+{
+	return DefaultNormalPool<T>.Instance;
+}
+\end{lstlisting}
+
+This method, in turn, will lazily create a new pool the first time a pool of that type is requested. This pool will defer to the beforementioned \verb|ObjectPool| implementation:
+
+\lstset{style=csharp, caption={SharedPools.DefaultNormalPool<T>}}
+\begin{lstlisting}
+private static class DefaultNormalPool<T> 
+																where T : class, 
+																					new()
+{
+	public static readonly ObjectPool<T> Instance = 
+		new ObjectPool<T>(() => new T(), 20);
+}
+\end{lstlisting}
+
+\item As a shared pool
+
+Taking the entire idea another step further, you can also share the pools themselves. This is useful to share data inside the pools: if in one parsing session you create a string "using" then it would be nice to re-use that in another parsing session. This follows the same idea of the statically shared \verb|TextKeyedCache| pool as we talked about in section \ref{sec:re-use-tokens} but expands this usage across all types due to its generic nature. Here again we see two separate usages:
+
+\subitem As a pre-defined pool
+
+Inside the \verb|SharedPools| we have a few pre-defined pools for general use cases. One of those is \verb|StringIgnoreCaseHashSet| which provides a hashset pool that compares its elements case-insensitively.
+
+\lstset{style=csharp, caption={SharedPools.StringIgnoreCaseHashSet}}
+\begin{lstlisting}
+public static readonly 
+	ObjectPool<HashSet<string>> StringIgnoreCaseHashSet =
+	new ObjectPool<HashSet<string>>(
+		() => new HashSet<string>(
+							StringComparer.OrdinalIgnoreCase), 20);
+\end{lstlisting}
+
+\subitem As a pre-defined type
+
+There are also specific types that provide some type-specific behaviour. An example of this is the \verb|StringBuilderPool|:
+
+\lstset{style=csharp, caption={StringBuilderPool}}
+\begin{lstlisting}
+internal static class StringBuilderPool
+{
+	public static StringBuilder Allocate()
+	{
+		return SharedPools.Default<StringBuilder>()
+										  .AllocateAndClear();
+	}
+	
+	public static void Free(StringBuilder builder)
+	{
+		SharedPools.Default<StringBuilder>()
+							 .ClearAndFree(builder);
+	}
+	
+	public static string ReturnAndFree(
+													StringBuilder builder)
+	{
+		SharedPools.Default<StringBuilder>()
+							 .ForgetTrackedObject(builder);
+		return builder.ToString();
+	}
+}
+\end{lstlisting}
+
+\end{itemize}

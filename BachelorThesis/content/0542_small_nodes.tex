@@ -1,0 +1,54 @@
+\subsection{Small nodes}
+\label{sec:small-nodes}
+
+Another performance-oriented aspect is the so-called "memory-footprint"\footnote{Memory footprint: The amount of memory software uses when running}. When an application is executed, it uses memory to temporarily store data that makes up the program's workflow. This memory is (unfortunately) not unlimited: every device only has a certain amount available. The more memory is used, the less memory becomes available for other tasks and the sooner you run out. C\# and VB.NET are managed languages which means the allocating and freeing of memory is done for the developer. The freeing of memory is done through the "Garbage Collector" (GC), a specialized service that will free unused memory locations when it deems it to be necessary. Discussing the GC is outside of the scope of this paper but it is important to realize that the more memory we use, the more the GC will have to step in and free up some of the unused memory locations so we can re-allocate these.\parencite{Todorov2013}
+
+Knowing that, we can take a look at the next performance aspect. As we know, syntax nodes are some of the most elemental constructs in our AST\footnote{AST: Abstract Syntax Tree}. Considering the sheer amount of nodes that a large applications exists of, it would pay off to keep these as small as possible. Doing so would reduce the amount of memory allocated which in turn would reduce the amount of garbage collections. A garbage collection is a relatively expensive operation since you basically put a hold on all active threads (except for the GC thread) so the GC can do its work.\parencite{Botelho2014}
+
+For this reason the Roslyn team decided to store certain information related to syntax nodes in a place that is not associated with that specific syntax node's object.\parencite{Sadov2014} "Meta-information" like diagnostic info and annotations are the two prime examples of this. In any given code base, most syntax nodes won't have any diagnostic information attached to them nor do they have annotations. This means that providing a field on every single syntax node object to store this information would be a waste of memory: in the end, a field with a \verb|null| value will still use some memory due to its pointer. For a 32-bit process this will be a 4-bit pointer while a 64-bit process will use an 8-bit pointer\footnote{https://msdn.microsoft.com/en-us/library/system.intptr.size(v=vs.110).aspx}. Multiply this by all the relevant syntax nodes and you reach a sizable amount of wasted memory space.
+
+What Roslyn does instead is store the diagnostics inside the syntax node's associated syntax tree and when the diagnostic information is actually requested, it will look them up inside that tree.
+
+\noindent This becomes clear when we take a look at the execution path in the code:
+
+\lstset{style=csharp, caption={CSharpSyntaxNode.GetDiagnostics}}
+\begin{lstlisting}
+public new IEnumerable<Diagnostic> GetDiagnostics()
+{
+	return this.SyntaxTree.GetDiagnostics(this);
+}
+\end{lstlisting}
+
+\noindent which passes it on to the following chain of calls inside the syntax tree:
+
+\lstset{style=csharp, caption={CSharpSyntaxTree.GetDiagnostics}}
+\begin{lstlisting}
+GetDiagnostics(node.Green, node.Position);
+EnumerateDiagnostics(greenNode, position);
+new SyntaxTreeDiagnosticEnumerator(this, node, position);
+\end{lstlisting}
+
+\noindent We can see a new specific enumerator is created which will traverse the syntax tree's nodes and return any diagnostics it finds. That is not the end, however. Eventually we still have to look up the diagnostic information and we know it's not stored inside the syntax node object. We follow the execution path again and now it becomes clear:
+
+\lstset{style=csharp, caption={SyntaxTreeDiagnosticEnumerator.MoveNext}}
+\begin{lstlisting}
+node.GetDiagnostics(); // node is a GreenNode
+\end{lstlisting}
+
+\lstset{style=csharp, caption={GreenNode.GetDiagnostics}}
+\begin{lstlisting}
+if (s_diagnosticsTable.TryGetValue(this, out diags))
+\end{lstlisting}
+
+\noindent and eventually we reach a statically defined look-up table where we connect given syntax nodes with their respective diagnostic information:
+
+\lstset{style=csharp, caption={GreenNode.s\_diagnosticsTable}}
+\begin{lstlisting}
+private static readonly 
+	ConditionalWeakTable<GreenNode, DiagnosticInfo[]> 
+		s_diagnosticsTable =
+			new ConditionalWeakTable<	GreenNode, 
+																DiagnosticInfo[]>();
+\end{lstlisting}
+
+This approach comes with the caveat that when there \textit{are} diagnostics or annotations, retrieving them will be more expensive compared to just accessing a field. A trade-off had to be made here between permanent extra memory-usage and occassional extra look-up time and apparently the former was deemed more important.

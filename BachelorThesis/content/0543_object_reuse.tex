@@ -1,0 +1,167 @@
+\subsection{Object re-use}
+\label{sec:object-reuse}
+
+We've already highlighted the importance of memory impact in section \ref{sec:small-nodes} by making the nodes as small as possible. There is another approach we can take to this by making \textit{duplicate} nodes take absolutely no space: we simply re-use existing objects. In section \ref{sec:re-use-measurements} we will mimic the experiments done by Robin Sedlaczek\parencite{Sedlaczek2015} based on an explanation by Vladimir Sadov\parencite{Sadov2014}. In the end we will have shown how we reach a red-tree façade as shown in image \ref{img:performance-node-reuse-red} while having an underlying structure as shown in image \ref{img:performance-node-reuse-green}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.75]{performance-node-reuse-red}
+\caption[Red-tree façade]{Red-tree façade \textcopyright Robin Sedlaczek}
+\label{img:performance-node-reuse-red}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.75]{performance-node-reuse-green}
+\caption[Underlying green tree nodes]{Underlying green tree nodes \textcopyright Robin Sedlaczek}
+\label{img:performance-node-reuse-green}
+\end{figure}
+
+\subsubsection{Re-using nodes}
+\label{sec:re-use-nodes}
+
+The first aspect we will look at is re-using our green nodes. As we established in section \ref{sec:rg-trees-solution}, green nodes have "vague" information: instead of a specific location in the syntax tree they instead contain the width of themselves. This is good because if it would have a specific location, we would (almost) never be able to re-use it: two distinct nodes in a single tree will be located at a different position. However by using the width instead we \textit{can} consider two similar nodes as identical because we merely look at their width which is the same for both.
+
+We can demonstrate this in the following example where we look at the node that represents \verb|2 + 2|.
+
+\lstset{style=csharp, caption={Re-using nodes based on width vs position}}
+\begin{lstlisting}
+int x = 2 + 2; // Width: 5; Position: 9
+int y = 2 + 2; // Width: 5; Position: 23
+\end{lstlisting}
+
+Following out of this and the fact that green nodes don't contain any other uniquely identifying information such as a parent, we can conclude that a single green node can represent multiple identical subtrees. In order to see how this is implemented we have to take a look at the \verb|SyntaxNodeCache|\footnote{\url{https://github.com/dotnet/roslyn/blob/b908b05b41d3adc3b5e81f8cf2d0055c13e4a1f6/src/Compilers/CSharp/Portable/Syntax/InternalSyntax/SyntaxNodeCache.cs}}.
+
+There are three main conclusions that we can take away from this implementation:
+
+\begin{itemize}
+
+\item Limited cache size
+
+Only a limited amount of nodes is stored in this cache. A trade-off has to be made between execution time and memory impact and the Roslyn team has decided to use a cache size of 65536 items (\verb|1 << 16|) as evidenced here:
+
+\lstset{style=csharp, caption={Definition of the SyntaxNodeCache's size}}
+\begin{lstlisting}
+private const int CacheSizeBits = 16;
+private const int CacheSize = 1 << CacheSizeBits;
+private const int CacheMask = CacheSize - 1;
+\end{lstlisting}
+
+\item First In, First out
+
+When a node is added, a hash key will be calculated. As is typical with hash implementations, this should strive to reach a uniform distribution across the data structure (an array in this case) for optimal performance. Based on this hash key and the mask, the to-be-cached node will be inserted at a certain location of the array. If an entry already exists at this location it will be overwritten, hence the FIFO (First In, First Out) principle.
+
+\lstset{style=csharp, caption={Inserting a node using FIFO}}
+\begin{lstlisting}
+var idx = hash & CacheMask;
+s_cache[idx] = new Entry(hash, node);
+\end{lstlisting}
+
+\item Up to 3 children
+
+The last important aspect of this cache is the fact that every node can only have up to three children. If it has any more, the chance of a cache miss is too big\parencite{Sadov2014} so these are not allowed in the first place. This is enforced by making sure there are only overloads available for 1, 2 and 3 nodes.
+
+\lstset{style=csharp, caption={Caching up to three children}}
+\begin{lstlisting}
+private static bool CanBeCached(GreenNode child1)
+{
+	return 	child1 == null || child1.IsCacheable;
+}
+
+private static bool CanBeCached(GreenNode child1, 
+																GreenNode child2)
+{
+	return 	CanBeCached(child1) && 
+					CanBeCached(child2);
+}
+
+private static bool CanBeCached(GreenNode child1, 
+																GreenNode child2, 
+																GreenNode child3)
+{
+	return 	CanBeCached(child1) && 
+					CanBeCached(child2) && 
+					CanBeCached(child3);
+}
+\end{lstlisting}
+
+\end{itemize}
+
+\subsubsection{Re-using tokens}
+\label{sec:re-use-tokens}
+
+Tokens are also cached but take a slightly different approach to doing so. When the source text is being parsed, the \verb|QuickScanner| looks inside the \verb|LexerCache| which maintains caches for both trivia and tokens.
+
+\lstset{style=csharp, caption={QuickScanner.QuickScanSyntaxToken}}
+\begin{lstlisting}
+if (state == QuickScanState.Done)
+{
+	// this is a good token!
+	var token = _cache.LookupToken(
+	    TextWindow.CharacterWindow,
+	    TextWindow.LexemeRelativeStart,
+	    i - TextWindow.LexemeRelativeStart,
+	    hashCode,
+	    _createQuickTokenFunction);
+	return token;
+}
+\end{lstlisting}
+
+Inside the \verb|LexerCache| the caches for trivia and tokens are stored by way of a \verb|TextKeyedCache| implementation. A \verb|TextKeyedCache| maintains two levels of caching: a local one and a shared one, each with their own characteristics.
+
+\noindent L1 Cache:
+
+\begin{itemize}
+\item Small cache size ($2^{11}$ items)
+\item Fast
+\item Thread-unsafe
+\item Local to the parsing session
+\end{itemize}
+
+\noindent L2 Cache:
+
+\begin{itemize}
+\item Larger cache size ($2^{16}$ items)
+\item Slower
+\item Thread-safe
+\item Shared between all parsing sessions
+\end{itemize}
+
+\noindent When an item is searched for in the cache, the \verb|TextKeyedCache| will first attempt to find it in the local cache (\verb|_localTable|) and if it wasn't found there, look in the shared cache (\verb|s_sharedTable|).
+
+\lstset{style=csharp, caption={TextKeyedCache.FindItem}}
+\begin{lstlisting}
+internal T FindItem(char[] chars, 
+										int start, 
+										int len, 
+										int hashCode)
+{
+	var idx = LocalIdxFromHash(hashCode);
+	var text = _localTable[idx].Text;
+
+	if (text != null && arr[idx].HashCode == hashCode)
+	{
+		if (StringTable.TextEquals(	text, 
+																chars, 
+																start, 
+																len))
+		{
+			// Return from local cache
+		}
+	}
+
+	SharedEntryValue e = FindSharedEntry(	chars, 
+																				start, 
+																				len, 
+																				hashCode);
+	if (e != null)
+	{
+		// Return from shared cache
+	}
+}
+\end{lstlisting}
+
+\subsubsection{Measurements}
+\label{sec:re-use-measurements}
+
+Some really awesome stuff here. Wait and see.

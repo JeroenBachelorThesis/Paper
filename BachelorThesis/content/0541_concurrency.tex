@@ -1,0 +1,63 @@
+\subsection{Concurrency}
+\label{sec:concurrency}
+
+\epigraph{A concurrent system is one where a computation can make progress without waiting for all other computations to complete -- where more than one computation can make progress at "the same time"}{\textit{Abraham Silberschatz \\ \footnotesize{Operating System Concepts 9th edition}}}
+
+When you think of performance, concurrency is often one of the first aspects that come to mind. As such, it also takes a prominent place in Roslyn's architecture. We have already established that one of the characteristics of a syntax tree is its immutability -- the inability to make changes to it after it is constructed. This is done with concurrency in mind: if we create a new tree for every concurrent operation, we have the guarantee that changes from operation X does not affect the tree that is being manipulated by operation Y. There are several more areas of concurrency though:
+
+\subsubsection{Source parsing}
+\label{sec:concur-source-parsing}
+
+Every file containing source code is parsed independently of any other files. The file is parsed sequentially (from top to bottom) and multiple files can be parsed at once.\parencite{Sadov2014}
+
+\subsubsection{Symbol binding }
+\label{sec:concur-symbol-binding}
+
+When identifiers are bound to symbols (see Chapter \ref{sec:binding-phase}) there is no real need to do this sequentially: in the end you basically just lookup the symbol in a table according to an identifier. One remark we have to add here though is the fact that a type's base members should also be bound when that type is being bound.
+
+Consider the following example:
+
+\lstset{style=csharp, caption={Why type hierarchy matters for binding}}
+\begin{lstlisting}
+class BaseType
+{
+	public virtual void Method() { }
+	public void BaseMethod() { }	
+}
+
+class SubType : BaseType
+{
+	public override void Method()
+	{
+		base.BaseMethod();
+	}
+}
+
+class AnotherType
+{
+	public void Method() { }
+}
+
+class StartUp 
+{
+	public static void Main(string[] args)
+	{
+		BaseType a = new SubType();
+		a.Method();
+		AnotherType b = new AnotherType();
+		b.Method();
+	}
+}
+\end{lstlisting}
+
+When we bind \verb|SubType| we have to bind \verb|BaseType| as well because, as is indicated, there might be a semantical dependency: we have to know, for example, whether that \verb|override| keyword is appropriate there. This is not a problem when there is no explicit base type involved: we know the base type is just \verb|System.Object| which is likely already bound and as such there are no other types we have to investigate. For this reason we can bind unrelated symbols in no specific order.
+
+\noindent We can say there is "implicit partial ordering".\parencite{Sadov2014}
+
+\subsubsection{Method body compilation }
+\label{sec:concur-symbol-binding}
+
+Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should emit the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in Chapter \ref{sec:deterministic-builds}. 
+
+Important to note is that method bodies are not emitted if there were any declaration errors. If that is the case, only binding is done for those aspects that can help in diagnosing the issue.\parencite{Sadov2014}
+
