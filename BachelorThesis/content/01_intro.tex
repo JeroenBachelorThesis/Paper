@@ -4,6 +4,8 @@
 \section{What is Roslyn?}
 \label{sec:intro-what?}
 
+what is it -- origin of name -- etc
+
 \section{What can Roslyn do?}
 \label{sec:intro-what-can}
 
@@ -63,7 +65,9 @@ Now that we know what Roslyn does it’s important to realize what gap is being 
 Roslyn introduced two very big changes to the community: the C\# compiler’s language changed and it has now become open-source. Prior to Roslyn, the C\# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was out of your reach. By open-sourcing Roslyn and placing it on CodePlex\footnote{https://roslyn.codeplex.com/} and afterwards Github\footnote{https://github.com/dotnet/roslyn/}, suddenly this box was opened and everybody could look at the internals of how a high-end compiler is written.
 
 This brings us to the other big change: because Roslyn is written in C\# rather than C++, the C\# compiler is now able to bootstrap itself. This means that Roslyn can compile itself in C\# to compile the next versions of the Roslyn compiler! The process is simple: Roslyn is compiled using the old C++ compiler after which that newly created compiler re-compiles the Roslyn code base and suddenly you have a C\# compiler that is written in C\#. 
-An added benefit of rewriting the compiler is the fact you can “discard” the older one. 
+An added benefit of rewriting the compiler is the fact you can “discard” the older one.
+
+With the change from C++ to C\# the compiler switched from an unmanaged language to a managed one. In essence this means that in a managed language like C\#, a special service called the "Garbage Collector" (GC) will take care of allocating and freeing memory. Without going too deep into the GC's working and purpose, the Roslyn team has found that this switch allowed them to focus more on improving the algorithms and less on taking care of memory issues. This resulted in a keystroke response time of under 80ms with the 98\textsuperscript{th} percentile even lowering as far as 40m -- a "significant improvement over the C++ version".\parencite{Wischik2014}
 
 It should be noted here that Roslyn is also VB.NET its new compiler and as such, VB.NET-specific parts are written in VB.NET. You will also notice that every unit test that applies to both C\# and VB.NET is duplicated in both languages. In this paper, however, we will focus on the C\# aspects.
 
@@ -87,7 +91,7 @@ There are many more benefits to open-sourcing:
 	
 	\item Developers themselves can now more easily learn how compilers work in a language they’re familiar with. Writing compilers has become more and more a “far-from-my-bed-show” with the rise of high-level languages – this might (re-)introduce some interest into such low-level concepts.
 	
-	\item It also facilitates advanced users by allowing them to inspect the bare bones of the compiler when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this Stack overflow question titled “Why does Roslyn crash when trying to rewrite this lambda?”\footnote{http://stackoverflow.com/a/34085687/1864167} where a user noticed that identical code compiles differently on the newer compiler version. Merely hours later, another user had identified the issue, discovered the offending commit in the Roslyn repository and submitted a PR with a fix.
+	\item It also facilitates advanced users by allowing them to inspect the bare bones of the compiler when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this stackoverflow question titled “Why does Roslyn crash when trying to rewrite this lambda?”\footnote{http://stackoverflow.com/a/34085687/1864167} where a user noticed that identical code compiles differently on the new compiler. Merely hours later, another user had identified the issue, discovered the offending commit in the Roslyn repository and submitted a PR with a fix.
 	
 	\item Last but not least it simply provides a very robust and efficient parser that external parties now won’t have to develop themselves. This doesn’t necessarily mean that those tools should switch to the Roslyn platform but they might incorporate some ideas of it in their own parser (as is the case with ReSharper, a popular code-refactoring tool).\parencite{Gorohovsky2014}
 
