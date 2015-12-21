@@ -1,7 +1,7 @@
 \subsection{Object re-use}
 \label{sec:object-reuse}
 
-We've already highlighted the importance of memory impact in section \ref{sec:small-nodes} by making the nodes as small as possible. There is another approach we can take to this by making \textit{duplicate} nodes take absolutely no space: we simply re-use existing objects. In section \ref{sec:re-use-measurements} we will mimic the experiments done by Robin Sedlaczek\parencite{Sedlaczek2015} based on an explanation by Vladimir Sadov\parencite{Sadov2014}. In the end we will have shown how we reach a red-tree façade as shown in image \ref{img:performance-node-reuse-red} while having an underlying structure as shown in image \ref{img:performance-node-reuse-green}.
+We've already highlighted the importance of memory impact in section \ref{sec:small-nodes} by making the nodes as small as possible. There is another approach we can take to this by making \textit{duplicate} nodes take absolutely no space: we simply re-use existing objects. In this section we will mimic the experiments done by Robin Sedlaczek\parencite{Sedlaczek2015} based on an explanation by Vladimir Sadov\parencite{Sadov2014}. In the end we will have shown how we reach a red-tree façade as shown in image \ref{img:performance-node-reuse-red} while having an underlying structure as shown in image \ref{img:performance-node-reuse-green}.
 
 \begin{figure}[h]
 \centering
@@ -164,4 +164,180 @@ internal T FindItem(char[] chars,
 \subsubsection{Measurements}
 \label{sec:re-use-measurements}
 
-Some really awesome stuff here. Wait and see.
+In order to visualize the impact of this approach, we will look at three scenarios of syntax tree parsing and see how they affect the heap in terms of object allocation.
+
+\begin{itemize}
+\item \textbf{Scenario 1:} Parsing two identical syntax trees
+
+\textbf{Expectation:} When the first tree is created, there will be a relatively large allocation which comes from the green nodes, trivial red nodes and the tokens. Since all nodes and tokens should be re-used, we expect only very minimal overhead that comes from creating the second syntax tree object itself.
+
+\textbf{Demonstration:} 
+
+\lstset{style=csharp, caption={Parsing two identical syntax trees}}
+\begin{lstlisting}
+internal class Experiment1
+{
+	public const string tree1 = @"
+using System;
+using System.Text;
+
+class MyClass 
+{
+    void MyMethod()
+    {
+        int result = 2 + 2;
+        Console.WriteLine(result);
+    }
+}";
+	private static void Main(string[] args)
+	{
+		var obj1 = CSharpSyntaxTree.ParseText(tree1);
+		var obj2 = CSharpSyntaxTree.ParseText(tree1);
+	}
+}
+\end{lstlisting}
+
+\textbf{Results:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{performance-node-reuse-scenario1-1}
+\caption{Memory impact comparison when parsing two identical syntax trees}
+\label{img:performance-node-reuse-scenario1-1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.80]{performance-node-reuse-scenario1-2}
+\caption{Memory impact of the first parsing session with identical trees}
+\label{img:performance-node-reuse-scenario1-2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.80]{performance-node-reuse-scenario1-3}
+\caption{Memory impact of the second parsing session with identical trees}
+\label{img:performance-node-reuse-scenario1-3}
+\end{figure}
+
+\textbf{Conclusion:} The first parsing session creates a lot of different objects but the next session only creates a relative tiny amount of new objects. An interesting aspect to note here is the kind of objects we see created in that first run (see figure \ref{img:performance-node-reuse-scenario1-2}): every token is cached when that first parsing session starts which causes a lot of initial allocations. 
+When we look further down the list of allocated objects we also see caches, the parser, specific object pools, factories and a lot more. However when we now look at the second parsing session and see how it affects the heap we see none of this: there are a few new nodes representing the broad lines of the tree but no new tokens, identifiers, parsers, caches, etc have been allocated.
+
+
+\item \textbf{Scenario 2:} Parsing two slightly different syntax trees
+
+\textbf{Expectation:} Corresponding to the previous experiment, we expect a lot of allocations in the first parsing session. The second parsing session should display a slightly higher amount of newly allocated objects than in the first experiment but it should still be relatively little considering most of the allocations came from tree-independent work like populating caches and creating parsers.
+
+\textbf{Demonstration:} 
+
+\lstset{style=csharp, caption={Parsing two slightly different syntax trees}}
+\begin{lstlisting}
+internal class Experiment2
+{
+	public const string tree1 = @"
+using System;
+using System.Text;
+
+class MyClass 
+{
+    void MyMethod()
+    {
+        int result = 2 + 2;
+        Console.WriteLine(result);
+    }
+}";
+
+	public const string tree2 = @"
+using System;
+using System.Text;
+
+class MyClass 
+{
+    private string myString = ""hello"";
+
+    void MyMethod()
+    {
+        int result = 2 + 2;
+        Console.WriteLine(result);
+    }
+}";
+
+	private static void Main(string[] args)
+	{
+		var obj1 = CSharpSyntaxTree.ParseText(tree1);
+		var obj2 = CSharpSyntaxTree.ParseText(tree2);
+	}
+}
+\end{lstlisting}
+
+\textbf{Results:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{performance-node-reuse-scenario2-1}
+\caption{Memory impact comparison when parsing two slightly different syntax trees}
+\label{img:performance-node-reuse-scenario2-1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.80]{performance-node-reuse-scenario2-2}
+\caption{Memory impact of the second parsing session with slightly different syntax trees}
+\label{img:performance-node-reuse-scenario2-2}
+\end{figure}
+
+\textbf{Conclusion:} As expected there are indeed more additional allocations in experiment 2 compared to experiment 1 (39 vs 13 respectively) which is still dwarfed by the initial allocation of 1650 objects. What we can see in figure \ref{img:performance-node-reuse-scenario2-2} are the additional string allocations and the syntax tree that makes up a field declaration (\verb|FieldDeclarationSyntax|, \verb|VariableDeclarationSyntax|, \verb|VariableDeclaratorSyntax|, and so on).
+
+\item \textbf{Scenario 3:} Iterating through the nodes of a tree
+
+\textbf{Expectation:} We know that red nodes are materialized lazily: they have a trivial structure when the green node is constructed and get expanded to full-fledged red nodes only when this is requested. By retrieving all the descendent nodes from the root of the tree, we expect a lot of extra allocations (relative to previous experiments). If we look at previous results we can tell they are all green nodes because the objects are contained in the \verb|InternalSyntax| namespace. By materializing, we should find allocations from objects based in the \verb|Syntax| namespace -- the red nodes that are exposed through APIs.
+
+\textbf{Demonstration:} 
+
+\lstset{style=csharp, caption={Iterating through the nodes of a tree}}
+\begin{lstlisting}
+internal class Experiment3
+{
+    public const string tree1 = @"
+using System;
+using System.Text;
+
+class MyClass 
+{
+    void MyMethod()
+    {
+        int result = 2 + 2;
+        Console.WriteLine(result);
+    }
+}";
+    private static void Main(string[] args)
+	{
+		var obj1 = CSharpSyntaxTree.ParseText(tree1);
+		var objects = obj1.GetRoot().DescendantNodesAndSelf()
+															  .ToArray();
+	}
+}
+\end{lstlisting}
+
+\textbf{Results:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{performance-node-reuse-scenario3-1}
+\caption{Memory impact comparison when materializing red nodes}
+\label{img:performance-node-reuse-scenario3-1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.80]{performance-node-reuse-scenario3-2}
+\caption{Memory impact when materializing red nodes}
+\label{img:performance-node-reuse-scenario3-2}
+\end{figure}
+
+\textbf{Conclusion:} We can see that a significant amount of allocations has occurred by iterating through our syntax tree. These objects are almost all located in the \verb|Syntax| namespace which confirms our expectation that we're dealing with red nodes. It's interesting to notice that every type that existed in our green tree now created the corresponding type in the red tree. We also see the \verb|WeakReference| in play which we will discuss in section \ref{sec:weak-references}.
+
+
+
+
+\end{itemize}
