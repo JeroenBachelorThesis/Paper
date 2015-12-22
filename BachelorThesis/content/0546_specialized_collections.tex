@@ -47,7 +47,7 @@ Notice also the note on line 20: smart usage of existing collections reduces the
 \subsubsection{CachingDictionary}
 \label{sec:spec-coll-cachingdictionary}
 
-Another implementation is the \verb|CachingDictionary|. As its name indicates, it represents an in-memory caching mechanism based on the \verb|Dictionary| collection. There is a very interesting implementation detail here: the backing dictionary is a \verb|ConcurrentDictionary| meaning its exposed methods are thread-safe\footnote{Thread-safety: two manipulating threads that don't interfere with each other}. However when the backing dictionary is full, it actually swaps that out for a normal \verb|Dictionary| to allow for less-expensive read-operations without the thread-safety overhead.
+Another implementation is the \verb|CachingDictionary|. As its name indicates, it represents an in-memory caching mechanism based on the \verb|Dictionary| collection. There is a very interesting implementation detail here: the backing dictionary is a \verb|ConcurrentDictionary| meaning its exposed methods are thread-safe\footnote{Thread-safety: two manipulating threads that don't interfere with each other}. However, when the backing dictionary is full, it actually swaps that out for a normal \verb|Dictionary| to allow for less-expensive read-operations without the thread-safety overhead.
 
 \lstset{style=csharp, caption={CachingDictionary.IsNotFullyPopulatedMap}}
 \begin{lstlisting}

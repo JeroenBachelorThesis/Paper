@@ -169,7 +169,7 @@ In order to visualize the impact of this approach, we will look at three scenari
 \begin{itemize}
 \item \textbf{Scenario 1:} Parsing two identical syntax trees
 
-\textbf{Expectation:} When the first tree is created, there will be a relatively large allocation which comes from the green nodes, trivial red nodes and the tokens. Since all nodes and tokens should be re-used, we expect only very minimal overhead that comes from creating the second syntax tree object itself.
+\textbf{Expectation:} When the first tree is created, there will be a relatively large allocation which comes from the green nodes, trivial red nodes and the tokens. Since almost all nodes and tokens should be re-used, we expect only very minimal overhead that comes from creating the second syntax tree object itself.
 
 \textbf{Demonstration:} 
 

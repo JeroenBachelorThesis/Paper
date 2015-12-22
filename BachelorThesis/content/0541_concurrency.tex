@@ -57,7 +57,7 @@ When we bind \verb|SubType| we have to bind \verb|BaseType| as well because, as 
 \subsubsection{Method body compilation }
 \label{sec:concur-symbol-binding}
 
-Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should emit the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in Chapter \ref{sec:deterministic-builds}. 
+Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should emit the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in section \ref{sec:deterministic-builds}. 
 
 Important to note is that method bodies are not emitted if there were any declaration errors. If that is the case, only binding is done for those aspects that can help in diagnosing the issue.\parencite{Sadov2014}
 

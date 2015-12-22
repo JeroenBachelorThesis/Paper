@@ -1,10 +1,10 @@
 \subsection{Object pooling}
 \label{sec:object-pooling}
 
-In chapter \ref{sec:object-reuse} we've discussed a specific approach at minimizing the amount of objects created. In this section we will take a look at a more general implementation of this idea. While nodes and tokens are at the very core of the Roslyn code base, they're not the only objects we'll create. 
+In chapter \ref{sec:object-reuse} we've discussed a specific approach at minimizing the amount of objects created. In this section we will take a look at a more general implementation of this idea. While nodes and tokens are at the very core of the Roslyn code base, they are not the only objects we will create. 
 
 When creating a lexer, one of the major tasks you're performing is reading source code and creating strings. If you would intermittently concatenate strings, this would increase memory pressure by a lot: every concatenation using \verb|+| creates a new string but you might only be interested in the result\footnote{https://msdn.microsoft.com/en-us/library/2839d5h5(v=vs.110).aspx}. 
-However creating a new \verb|StringBuilder| object every time you want to concatenate strings is an expensive operation as well: since a lot of string concatenation is done, a lot of distinct \verb|StringBuilder| instances will be created and you again have the issue as described before. The solution here is to take pooling one step further: every type can be pooled through the \verb|ObjectPool<T>| class.\parencite{Warren2014} This provides a generic implementation of the object pooling pattern and will be used through intermediate classes.
+However, creating a new \verb|StringBuilder| object every time you want to concatenate strings is an expensive operation as well: since a lot of string concatenation is done, a lot of distinct \verb|StringBuilder| instances will be created and you again have the issue as described before. The solution here is to take pooling one step further: every type can be pooled through the \verb|ObjectPool<T>| class.\parencite{Warren2014} This provides a generic implementation of the object pooling pattern and will be used through intermediate classes.
 
 An accurate description of this class' workings can be found in its documentation\footnote{\url{https://github.com/dotnet/roslyn/blob/b908b05b41d3adc3b5e81f8cf2d0055c13e4a1f6/src/Compilers/Core/SharedCollections/ObjectPool\%601.cs}}:
 

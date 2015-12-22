@@ -10,7 +10,7 @@ what is it -- origin of name -- etc
 \label{sec:intro-what-can}
 
 There are three major aspects that can be analyzed: the syntax, the semantic model and the data flow. 
-The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note however that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
+The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note, however, that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
 The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type \verb|ClassDeclarationSyntax|)
 
 \lstset{style=csharp, caption={Interpretation of a class declaration}}
@@ -60,16 +60,16 @@ we now receive “2” as a result. This is an extremely powerful (albeit curren
 \section{Why was Roslyn built?}
 \label{sec:intro-why}
 
-Now that we know what Roslyn does it’s important to realize what gap is being closed. After all, something has to be special about Roslyn if it is to receive such widespread attention.
+Now that we know what Roslyn does, it is important to realize what gap is being closed. After all, something has to be special about Roslyn if it is to receive such widespread attention.
 
-Roslyn introduced two very big changes to the community: the C\# compiler’s language changed and it has now become open-source. Prior to Roslyn, the C\# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was out of your reach. By open-sourcing Roslyn and placing it on CodePlex\footnote{https://roslyn.codeplex.com/} and afterwards Github\footnote{https://github.com/dotnet/roslyn/}, suddenly this box was opened and everybody could look at the internals of how a high-end compiler is written.
+Roslyn introduced two very big changes to the community: the C\# compiler’s language changed and it has now become open-source. Prior to Roslyn, the C\# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was out of your reach. By open-sourcing Roslyn and placing it on CodePlex\footnote{https://roslyn.codeplex.com/} and afterwards Github\footnote{https://github.com/dotnet/roslyn/}, this box was suddenly opened and everybody could look at the internals of how a high-end compiler is written.
 
 This brings us to the other big change: because Roslyn is written in C\# rather than C++, the C\# compiler is now able to bootstrap itself. This means that Roslyn can compile itself in C\# to compile the next versions of the Roslyn compiler! The process is simple: Roslyn is compiled using the old C++ compiler after which that newly created compiler re-compiles the Roslyn code base and suddenly you have a C\# compiler that is written in C\#. 
 An added benefit of rewriting the compiler is the fact you can “discard” the older one.
 
 With the change from C++ to C\# the compiler switched from an unmanaged language to a managed one. In essence this means that in a managed language like C\#, a special service called the "Garbage Collector" (GC) will take care of allocating and freeing memory. Without going too deep into the GC's working and purpose, the Roslyn team has found that this switch allowed them to focus more on improving the algorithms and less on taking care of memory issues. This resulted in a keystroke response time of under 80ms with the 98\textsuperscript{th} percentile even lowering as far as 40ms -- a "significant improvement over the C++ version".\parencite{Wischik2014}
 
-It should be noted here that Roslyn is also VB.NET its new compiler and as such, VB.NET-specific parts are written in VB.NET. You will also notice that every unit test that applies to both C\# and VB.NET is duplicated in both languages. In this paper, however, we will focus on the C\# aspects.
+It should be noted here that Roslyn is also VB.NET's new compiler and as such, VB.NET-specific parts are written in VB.NET. You will also notice that every unit test that applies to both C\# and VB.NET is duplicated in both languages. In this paper, however, we will focus on the C\# aspects.
 
 \section{Positivity of an open compiler}
 \label{sec:intro-pos-comp}
