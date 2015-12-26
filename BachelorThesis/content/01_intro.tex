@@ -11,7 +11,7 @@ what is it -- origin of name -- etc
 
 There are three major aspects that can be analyzed: the syntax, the semantic model and the data flow. 
 The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note, however, that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
-The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type \verb|ClassDeclarationSyntax|)
+The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type \texttt{ClassDeclarationSyntax})
 
 \lstset{style=csharp, caption={Interpretation of a class declaration}}
 \begin{lstlisting}
@@ -19,7 +19,7 @@ public class MyClass { }
 \end{lstlisting}
 
 	
-while in this code, the \verb|MyClass| will be interpreted as an \verb|IdentifierNameSyntax|:
+while in this code, the \texttt{MyClass} will be interpreted as an \texttt{IdentifierNameSyntax}:
 
    
 \lstset{style=csharp, caption={Interpretation of an object instantiations}}
@@ -41,7 +41,7 @@ For example consider the following method:
 
 \end{lstlisting}
 	
-Analyzing this method’s data flow and looking at the \verb|DataFlowAnalysis.AlwaysAssigned| property, would tell us that only 1 local here would be always assigned. However if we now alter the above code to this:
+Analyzing this method’s data flow and looking at the \texttt{DataFlowAnalysis.AlwaysAssigned} property, would tell us that only 1 local here would be always assigned. However if we now alter the above code to this:
 
 \lstset{style=csharp, caption={A method with conditional assignments}}
 \begin{lstlisting}

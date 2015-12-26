@@ -3,8 +3,8 @@
 
 In chapter \ref{sec:object-reuse} we've discussed a specific approach at minimizing the amount of objects created. In this section we will take a look at a more general implementation of this idea. While nodes and tokens are at the very core of the Roslyn code base, they are not the only objects we will create. 
 
-When creating a lexer, one of the major tasks you're performing is reading source code and creating strings. If you would intermittently concatenate strings, this would increase memory pressure by a lot: every concatenation using \verb|+| creates a new string but you might only be interested in the result\footnote{https://msdn.microsoft.com/en-us/library/2839d5h5(v=vs.110).aspx}. 
-However, creating a new \verb|StringBuilder| object every time you want to concatenate strings is an expensive operation as well: since a lot of string concatenation is done, a lot of distinct \verb|StringBuilder| instances will be created and you again have the issue as described before. The solution here is to take pooling one step further: every type can be pooled through the \verb|ObjectPool<T>| class.\parencite{Warren2014} This provides a generic implementation of the object pooling pattern and will be used through intermediate classes.
+When creating a lexer, one of the major tasks you're performing is reading source code and creating strings. If you would intermittently concatenate strings, this would increase memory pressure by a lot: every concatenation using \texttt{+} creates a new string but you might only be interested in the result\footnote{https://msdn.microsoft.com/en-us/library/2839d5h5(v=vs.110).aspx}. 
+However, creating a new \texttt{StringBuilder} object every time you want to concatenate strings is an expensive operation as well: since a lot of string concatenation is done, a lot of distinct \texttt{StringBuilder} instances will be created and you again have the issue as described before. The solution here is to take pooling one step further: every type can be pooled through the \texttt{ObjectPool<T>} class.\parencite{Warren2014} This provides a generic implementation of the object pooling pattern and will be used through intermediate classes.
 
 An accurate description of this class' workings can be found in its documentation\footnote{\url{https://github.com/dotnet/roslyn/blob/b908b05b41d3adc3b5e81f8cf2d0055c13e4a1f6/src/Compilers/Core/SharedCollections/ObjectPool\%601.cs}}:
 
@@ -27,7 +27,7 @@ Rationale:
    If there is no intent for reusing the object, do not use pool - just use "new". 
 \end{quotation}
 
-An interesting addition here is the implementation of \verb|SharedPools|. As the name indicates, this is a class that manages the sharing of object pools. There are two ways to use this class:
+An interesting addition here is the implementation of \texttt{SharedPools}. As the name indicates, this is a class that manages the sharing of object pools. There are two ways to use this class:
 
 \begin{itemize}
 \item As a single, standalone pool
@@ -44,7 +44,7 @@ public static ObjectPool<T> Default<T>()
 }
 \end{lstlisting}
 
-This method, in turn, will lazily create a new pool the first time a pool of that type is requested. This pool will defer to the beforementioned \verb|ObjectPool| implementation:
+This method, in turn, will lazily create a new pool the first time a pool of that type is requested. This pool will defer to the beforementioned \texttt{ObjectPool} implementation:
 
 \lstset{style=csharp, caption={SharedPools.DefaultNormalPool<T>}}
 \begin{lstlisting}
@@ -59,11 +59,11 @@ private static class DefaultNormalPool<T>
 
 \item As a shared pool
 
-Taking the entire idea another step further, you can also share the pools themselves. This is useful to share data inside the pools: if in one parsing session you create a string "using" then it would be nice to re-use that in another parsing session. This follows the same idea of the statically shared \verb|TextKeyedCache| pool as we talked about in section \ref{sec:re-use-tokens} but expands this usage across all types due to its generic nature. Here again we see two separate usages:
+Taking the entire idea another step further, you can also share the pools themselves. This is useful to share data inside the pools: if in one parsing session you create a string "using" then it would be nice to re-use that in another parsing session. This follows the same idea of the statically shared \texttt{TextKeyedCache} pool as we talked about in section \ref{sec:re-use-tokens} but expands this usage across all types due to its generic nature. Here again we see two separate usages:
 
 \subitem As a pre-defined pool
 
-Inside the \verb|SharedPools| we have a few pre-defined pools for general use cases. One of those is \verb|StringIgnoreCaseHashSet| which provides a hashset pool that compares its elements case-insensitively.
+Inside the \texttt{SharedPools} we have a few pre-defined pools for general use cases. One of those is \texttt{StringIgnoreCaseHashSet} which provides a hashset pool that compares its elements case-insensitively.
 
 \lstset{style=csharp, caption={SharedPools.StringIgnoreCaseHashSet}}
 \begin{lstlisting}
@@ -76,7 +76,7 @@ public static readonly
 
 \subitem As a pre-defined type
 
-There are also specific types that provide some type-specific behaviour. An example of this is the \verb|StringBuilderPool|:
+There are also specific types that provide some type-specific behaviour. An example of this is the \texttt{StringBuilderPool}:
 
 \lstset{style=csharp, caption={StringBuilderPool}}
 \begin{lstlisting}

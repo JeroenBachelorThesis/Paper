@@ -7,7 +7,7 @@
 \epigraph{With the number of dependencies present in large software projects, there is no way any amount of global surveillance, network censorship, machine isolation, or firewalling can sufficiently protect the software development process of widely deployed software projects in order to prevent scenarios where malware sneaks into a development dependency through an exploit in combination with code injection, and makes its way into the build process of software that is critical to the function of the world economy.}
 {\textit{Mike Perry \\ \footnotesize{Deterministic Builds Part One: Cyberwar and Global Compromise\protect\footnotemark}}}
 
-\footnotetext{https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise}
+\footnotetext{\url{https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise}}
 
 When it comes to security, one of the main guarantees you're interested is that the the file you have locally is the same as what has been audited by the vendor and/or community. A popular way to do this is by having the vendor/community create a hash of the application and store it publicly. Afterwards the user can download the binaries or source files (which can be anything from a small plugin to a full-fledged application), generate a hash from those files using the same algorithm and compare the results. Ideally, these two hashcodes should be the same. If they are not the same, there are three possible causes:
 
@@ -17,7 +17,7 @@ When it comes to security, one of the main guarantees you're interested is that 
 \item The application is not deterministic
 \end{itemize}
 
-In this section we will talk about the third option. It should be noted that at the time of writing deterministic builds have not been entirely implemented yet in the Roslyn code base but if the tracking issue \#372\footnote{https://github.com/dotnet/roslyn/issues/372} is any indication, there is only a limited amount of work left to be done.
+In this section we will talk about the third option. It should be noted that at the time of writing deterministic builds have not been entirely implemented yet in the Roslyn code base but if the tracking issue \#372\footnote{\url{https://github.com/dotnet/roslyn/issues/372}} is any indication, there is only a limited amount of work left to be done.
 
 \subsubsection{What makes a build deterministic?}
 \label{sec:deterministic-builds-what}
@@ -28,12 +28,12 @@ In this section we will talk about the third option. It should be noted that at 
 
 \noindent This definition immediately highlights the key idea behind deterministic builds: when a developer builds the Roslyn solution on his local machine, he should receive an identical result as if it had happened on Microsoft's build-servers. This is a harder task than it looks: it means that your code base can't contain any non-deterministic behaviour. While this might seem like an obvious conclusion, it implies that every single aspect of the code base that has an effect on its output must be implicitly or explicitly the same every time the code is built. 
 
-As an example we can look at Roslyn issue \#223\footnote{https://github.com/dotnet/roslyn/issues/223} which specifies that in a certain scenario, anonymous types are emitted in a different order than expected. Looking closer at the diagnosis presented by the team we can see that the culprit seems to be the enumerating of dictionary entries.
+As an example we can look at Roslyn issue \#223\footnote{\url{https://github.com/dotnet/roslyn/issues/223}} which specifies that in a certain scenario, anonymous types are emitted in a different order than expected. Looking closer at the diagnosis presented by the team we can see that the culprit seems to be the enumerating of dictionary entries.
 
-Looking at the exact fix in PR \#948\footnote{https://github.com/dotnet/roslyn/pull/948/files} we see that the change consisted switching from a non-deterministic iteration to a deterministic one. When you iterate the \verb|Values| property of a \verb|Dictionary<K, V>| you do so in an unspecified order as we can read from the documentation:
+Looking at the exact fix in PR \#948\footnote{\url{https://github.com/dotnet/roslyn/pull/948/files}} we see that the change consisted switching from a non-deterministic iteration to a deterministic one. When you iterate the \texttt{Values} property of a \texttt{Dictionary<K, V>} you do so in an unspecified order as we can read from the documentation:
 
 \begin{displayquote}
-The order of the values in the \verb|Dictionary<TKey, TValue>.ValueCollection| is unspecified, but it is the same order as the associated keys in the \verb|Dictionary<TKey, TValue>.KeyCollection| returned by the \verb|Keys| property.\footnote{https://msdn.microsoft.com/en-us/library/ekcfxy3x.aspx}
+The order of the values in the \texttt{Dictionary<TKey, TValue>.ValueCollection} is unspecified, but it is the same order as the associated keys in the \texttt{Dictionary<TKey, TValue>.KeyCollection} returned by the \texttt{Keys} property.\footnote{\url{https://msdn.microsoft.com/en-us/library/ekcfxy3x.aspx}}
 \end{displayquote}
 
 \noindent Indeed, the result was to switch from an undeterministic iteration (listing \ref{lst:undeterministic-values}) to a deterministic one by ordering the collection first (listing \ref{lst:deterministic-values}).
@@ -57,6 +57,6 @@ The security aspect is a major reason to provide this characteristic to your cod
 
 \begin{itemize}
 \item Reduces surprises by not relying on unspecified behaviour
-\item Reduces I/O load by being able to skip a specific binary in certain situations if a binary with that exact hash is already stored\footnote{\label{ft:chromium}https://www.chromium.org/developers/testing/isolated-testing/deterministic-builds}
+\item Reduces I/O load by being able to skip a specific binary in certain situations if a binary with that exact hash is already stored\footnote{\label{ft:chromium}\url{https://www.chromium.org/developers/testing/isolated-testing/deterministic-builds}}
 \item Reduces test execution time through the ability of re-using cached test results if the tested binary has not changed\textsuperscript{\ref{ft:chromium}}
 \end{itemize}

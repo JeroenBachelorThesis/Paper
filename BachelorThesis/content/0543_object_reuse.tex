@@ -22,7 +22,7 @@ We've already highlighted the importance of memory impact in section \ref{sec:sm
 
 The first aspect we will look at is re-using our green nodes. As we established in section \ref{sec:rg-trees-solution}, green nodes have "vague" information: instead of a specific location in the syntax tree they instead contain the width of themselves. This is good because if it would have a specific location, we would (almost) never be able to re-use it: two distinct nodes in a single tree will be located at a different position. However by using the width instead we \textit{can} consider two similar nodes as identical because we merely look at their width which is the same for both.
 
-We can demonstrate this in the following example where we look at the node that represents \verb|2 + 2|.
+We can demonstrate this in the following example where we look at the node that represents \texttt{2 + 2}.
 
 \lstset{style=csharp, caption={Re-using nodes based on width vs position}}
 \begin{lstlisting}
@@ -30,7 +30,7 @@ int x = 2 + 2; // Width: 5; Position: 9
 int y = 2 + 2; // Width: 5; Position: 23
 \end{lstlisting}
 
-Following out of this and the fact that green nodes don't contain any other uniquely identifying information such as a parent, we can conclude that a single green node can represent multiple identical subtrees. In order to see how this is implemented we have to take a look at the \verb|SyntaxNodeCache|\footnote{\url{https://github.com/dotnet/roslyn/blob/b908b05b41d3adc3b5e81f8cf2d0055c13e4a1f6/src/Compilers/CSharp/Portable/Syntax/InternalSyntax/SyntaxNodeCache.cs}}.
+Following out of this and the fact that green nodes don't contain any other uniquely identifying information such as a parent, we can conclude that a single green node can represent multiple identical subtrees. In order to see how this is implemented we have to take a look at the \texttt{SyntaxNodeCache}\footnote{\url{https://github.com/dotnet/roslyn/blob/b908b05b41d3adc3b5e81f8cf2d0055c13e4a1f6/src/Compilers/CSharp/Portable/Syntax/InternalSyntax/SyntaxNodeCache.cs}}.
 
 There are three main conclusions that we can take away from this implementation:
 
@@ -38,7 +38,7 @@ There are three main conclusions that we can take away from this implementation:
 
 \item Limited cache size
 
-Only a limited amount of nodes is stored in this cache. A trade-off has to be made between execution time and memory impact and the Roslyn team has decided to use a cache size of 65536 items (\verb|1 << 16|) as evidenced here:
+Only a limited amount of nodes is stored in this cache. A trade-off has to be made between execution time and memory impact and the Roslyn team has decided to use a cache size of 65536 items (\texttt{1 << 16}) as evidenced here:
 
 \lstset{style=csharp, caption={Definition of the SyntaxNodeCache's size}}
 \begin{lstlisting}
@@ -90,7 +90,7 @@ private static bool CanBeCached(GreenNode child1,
 \subsubsection{Re-using tokens}
 \label{sec:re-use-tokens}
 
-Tokens are also cached but take a slightly different approach to doing so. When the source text is being parsed, the \verb|QuickScanner| looks inside the \verb|LexerCache| which maintains caches for both trivia and tokens.
+Tokens are also cached but take a slightly different approach to doing so. When the source text is being parsed, the \texttt{QuickScanner} looks inside the \texttt{LexerCache} which maintains caches for both trivia and tokens.
 
 \lstset{style=csharp, caption={QuickScanner.QuickScanSyntaxToken}}
 \begin{lstlisting}
@@ -107,7 +107,7 @@ if (state == QuickScanState.Done)
 }
 \end{lstlisting}
 
-Inside the \verb|LexerCache| the caches for trivia and tokens are stored by way of a \verb|TextKeyedCache| implementation. A \verb|TextKeyedCache| maintains two levels of caching: a local one and a shared one, each with their own characteristics.
+Inside the \texttt{LexerCache} the caches for trivia and tokens are stored by way of a \texttt{TextKeyedCache} implementation. A \texttt{TextKeyedCache} maintains two levels of caching: a local one and a shared one, each with their own characteristics.
 
 \noindent L1 Cache:
 
@@ -127,7 +127,7 @@ Inside the \verb|LexerCache| the caches for trivia and tokens are stored by way 
 \item Shared between all parsing sessions
 \end{itemize}
 
-\noindent When an item is searched for in the cache, the \verb|TextKeyedCache| will first attempt to find it in the local cache (\verb|_localTable|) and if it wasn't found there, look in the shared cache (\verb|s_sharedTable|).
+\noindent When an item is searched for in the cache, the \texttt{TextKeyedCache} will first attempt to find it in the local cache (\texttt{\_localTable}) and if it wasn't found there, look in the shared cache (\texttt{s\_sharedTable}).
 
 \lstset{style=csharp, caption={TextKeyedCache.FindItem}}
 \begin{lstlisting}
@@ -286,11 +286,11 @@ class MyClass
 \label{img:performance-node-reuse-scenario2-2}
 \end{figure}
 
-\textbf{Conclusion:} As expected there are indeed more additional allocations in experiment 2 compared to experiment 1 (39 vs 13 respectively) which is still dwarfed by the initial allocation of 1650 objects. What we can see in figure \ref{img:performance-node-reuse-scenario2-2} are the additional string allocations and the syntax tree that makes up a field declaration (\verb|FieldDeclarationSyntax|, \verb|VariableDeclarationSyntax|, \verb|VariableDeclaratorSyntax|, and so on).
+\textbf{Conclusion:} As expected there are indeed more additional allocations in experiment 2 compared to experiment 1 (39 vs 13 respectively) which is still dwarfed by the initial allocation of 1650 objects. What we can see in figure \ref{img:performance-node-reuse-scenario2-2} are the additional string allocations and the syntax tree that makes up a field declaration (\texttt{FieldDeclarationSyntax}, \texttt{VariableDeclarationSyntax}, \texttt{VariableDeclaratorSyntax}, and so on).
 
 \item \textbf{Scenario 3:} Iterating through the nodes of a tree
 
-\textbf{Expectation:} We know that red nodes are materialized lazily: they have a trivial structure when the green node is constructed and get expanded to full-fledged red nodes only when this is requested. By retrieving all the descendent nodes from the root of the tree, we expect a lot of extra allocations (relative to previous experiments). If we look at previous results we can tell they are all green nodes because the objects are contained in the \verb|InternalSyntax| namespace. By materializing, we should find allocations from objects based in the \verb|Syntax| namespace -- the red nodes that are exposed through APIs.
+\textbf{Expectation:} We know that red nodes are materialized lazily: they have a trivial structure when the green node is constructed and get expanded to full-fledged red nodes only when this is requested. By retrieving all the descendent nodes from the root of the tree, we expect a lot of extra allocations (relative to previous experiments). If we look at previous results we can tell they are all green nodes because the objects are contained in the \texttt{InternalSyntax} namespace. By materializing, we should find allocations from objects based in the \texttt{Syntax} namespace -- the red nodes that are exposed through APIs.
 
 \textbf{Demonstration:} 
 
@@ -335,7 +335,7 @@ class MyClass
 \label{img:performance-node-reuse-scenario3-2}
 \end{figure}
 
-\textbf{Conclusion:} We can see that a significant amount of allocations has occurred by iterating through our syntax tree. These objects are almost all located in the \verb|Syntax| namespace which confirms our expectation that we're dealing with red nodes. It's interesting to notice that every type that existed in our green tree now created the corresponding type in the red tree. We also see the \verb|WeakReference| in play which we will discuss in section \ref{sec:weak-references}.
+\textbf{Conclusion:} We can see that a significant amount of allocations has occurred by iterating through our syntax tree. These objects are almost all located in the \texttt{Syntax} namespace which confirms our expectation that we're dealing with red nodes. It's interesting to notice that every type that existed in our green tree now created the corresponding type in the red tree. We also see the \texttt{WeakReference} in play which we will discuss in section \ref{sec:weak-references}.
 
 
 

@@ -50,7 +50,7 @@ class StartUp
 }
 \end{lstlisting}
 
-When we bind \verb|SubType| we have to bind \verb|BaseType| as well because, as is indicated, there might be a semantical dependency: we have to know, for example, whether that \verb|override| keyword is appropriate there. This is not a problem when there is no explicit base type involved: we know the base type is just \verb|System.Object| which is likely already bound and as such there are no other types we have to investigate. For this reason we can bind unrelated symbols in no specific order.
+When we bind \texttt{SubType} we have to bind \texttt{BaseType} as well because, as is indicated, there might be a semantical dependency: we have to know, for example, whether that \texttt{override} keyword is appropriate there. This is not a problem when there is no explicit base type involved: we know the base type is just \texttt{System.Object} which is likely already bound and as such there are no other types we have to investigate. For this reason we can bind unrelated symbols in no specific order.
 
 \noindent We can say there is "implicit partial ordering".\parencite{Sadov2014}
 
