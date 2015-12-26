@@ -33,7 +33,7 @@ As an example we can look at Roslyn issue \#223\footnote{https://github.com/dotn
 Looking at the exact fix in PR \#948\footnote{https://github.com/dotnet/roslyn/pull/948/files} we see that the change consisted switching from a non-deterministic iteration to a deterministic one. When you iterate the \verb|Values| property of a \verb|Dictionary<K, V>| you do so in an unspecified order as we can read from the documentation:
 
 \begin{displayquote}
-The order of the values in the \verb|Dictionary<TKey, TValue>.ValueCollection| is unspecified, but it is the same order as the associated keys in the \verb|Dictionary<TKey, TValue>.KeyCollection| returned by the \verb|Keys| property.\footnote{https://msdn.microsoft.com/en-us/library/ekcfxy3x.aspx}
+The order of the values in the \verb|Dictionary<TKey, TValue>.ValueCollection| is unspecified, but it is the same order as the associated keys in the \verb|Dictionary<TKey, TValue>.KeyCollection| returned by the \verb|Keys| property.\footnote{https://msdn.microsoft.com/en-us/library/ekcfxy3x.aspx}
 \end{displayquote}
 
 \noindent Indeed, the result was to switch from an undeterministic iteration (listing \ref{lst:undeterministic-values}) to a deterministic one by ordering the collection first (listing \ref{lst:deterministic-values}).
