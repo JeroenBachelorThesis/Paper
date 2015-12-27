@@ -1,2 +1,105 @@
 \chapter{Implementing a Diagnostic}
 \label{ch:diagnostic}
+
+As a way to demonstrate the usefulness of Roslyn, a specific usecase will be investigated. You might be familiar with \texttt{string.Format()} but if not: it's a way of creating a formatted string by using placeholders and corresponding arguments to interpolate certain portions of it. 
+
+For example the code in listing \ref{lst:string-format-example} will display "Hello John!". As you can tell, the placeholder (which is an integer delimited by angle brackets) will correspond to the argument you pass in afterwards.
+
+\lstset{style=csharp, caption={Example usage of string.Format}}
+\begin{lstlisting}[label={lst:string-format-example}]
+string.Format("Hello {0}!", "John");
+\end{lstlisting}
+
+One scenario where this can go wrong if you have a placeholder inside your format but no corresponding argument as is demonstrated in listing \ref{lst:string-format-example-missing-arg}. This would make substitution impossible and throw a \texttt{FormatException}\footnote{\url{https://msdn.microsoft.com/en-us/library/system.string.format(v=vs.110).aspx\#Format_Exceptions}} at runtime. This immediately highlights the danger: C\# is generally a statically typed language so we are used to some degree of confidence as soon as the code compiles. A formatting string, however, is not evaluated until that formatting is actually requested through the application's flow. 
+
+\lstset{style=csharp, caption={Example usage of string.Format with a missing argument}}
+\begin{lstlisting}[label={lst:string-format-example-missing-arg}]
+string.Format("Hello {0}! My name is {1}", "John");
+\end{lstlisting}
+
+In this section we will create an analyzer that scans our solution for occurrences where \texttt{string.Format} is used with more placeholders than it has arguments. Afterwards we will use this analyzer to scan a few popular repositories and see if we can find anything. The full code can be found in !!REFERENCE ATTACHMENT!!.
+
+\section{Getting started}
+\label{sec:diagnostic-getting-started}
+
+There are a few requirements in order to get started with writing your own diagnostic. Once you have these installed you can get started by creating a new solution using the "Diagnostic with Code Fix (NuGet + VSIX)" template which will get you started with a class library for your analyzers, a testing project to write unit tests and a Vsix project to install it as an extension.
+
+\begin{itemize}
+\item Visual Studio 2015\footnote{\url{https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx}}
+\item The .NET Compiler Platform SDK \footnote{\url{https://visualstudiogallery.msdn.microsoft.com/2ddb7240-5249-4c8c-969e-5d05823bcb89}}
+\end{itemize}
+
+\section{Implementing the diagnostic}
+\label{sec:diagnostic-implementing}
+
+There are a few ways to implement this: you could keep it easy and find all formats, normalize them by removing format specifiers for each placeholder and replacing the arguments with example strings and then calling \texttt{string.Format} inside your analyzer and see if it throws any exception. This would certainly be a valid approach but hardly a good demonstration of what Roslyn can do. Instead, we will analyze the syntax tree, use the semantic model to get info about its nodes and parse the format ourselves.
+
+The general layout of an analyzer is straightforward and consists of the following aspects:
+
+\begin{itemize}
+\item Metadata such as supported languages, severity, category, message and title
+\item Registration of what should trigger the analyzer
+\item Implementation of the actual analyzer
+\end{itemize}
+
+The two most important ones (that the user will get into contact with) are the severity and the message. The severity determines whether it will be a warning, an error, info or something that only shows up when you look at the context-actions for a specific line of code ('hidden'). The message is the message the user sees in his 'Error List' window and is essential to tell the user what's wrong.
+
+This metadata is exposed to the underlying architecture by means of the \texttt{SupportedDiagnostics} property as we can see in listing \ref{lst:diagnostic-metadata}. Specifying which languages are supported has to be done separately through an annotation (listing \ref{lst:diagnostic-supported-lang}).
+
+\lstset{style=csharp, caption={Configuring metadata for your analyzer}}
+\begin{lstlisting}[label={lst:diagnostic-metadata}]
+internal static DiagnosticDescriptor Rule =>
+	new DiagnosticDescriptor(
+			"MyUniqueId", 
+			@"This guards against using a placeholder 
+				without corresponding argument", 
+			"A string.Format() call has too few arguments", 
+			"My own category", 
+			DiagnosticSeverity.Error, 
+			enabledByDefault: true);
+public override ImmutableArray<DiagnosticDescriptor> 
+	SupportedDiagnostics => ImmutableArray.Create(Rule);							
+\end{lstlisting}
+
+\lstset{style=csharp, caption={Configuring supported languages}}
+\begin{lstlisting}[label={lst:diagnostic-supported-lang}]
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class MyAnalyzer : DiagnosticAnalyzer
+\end{lstlisting}
+
+Once this is taken care of we have to decide what should trigger our analyzer. Depending on what you, choose your analyzer can be fired during the parsing stage or something at a higher level. We will fire ours each time it comes across an invocation but there are many ways to approach it: you could also register your analyzer when it comes across a string literal or an argument list. Each of these three options require you to verify that you're dealing with a \texttt{string.Format} call so it's up to you to decide what path to take. Keep in mind though that firing an analyzer is not free of charge so you should strive for a configuration that has as little false-positive invocations as possible.
+
+In order to setup this configuration you have to override the \texttt{Initialize} method, register the kind of action you're interested in and pass along the actual analyzer implementation followed by a \texttt{params} list of accepted firing conditions (listing \ref{lst:diagnostic-register-action}).
+
+\lstset{style=csharp, caption={Registering your analyzer's firing condition}}
+\begin{lstlisting}[label={lst:diagnostic-register-action}]
+public override void Initialize(AnalysisContext context)
+{
+	context.RegisterSyntaxNodeAction(
+		AnalyzeNode, 
+		SyntaxKind.InvocationExpression);
+}
+\end{lstlisting}
+
+
+\section{Demonstration}
+\label{sec:diagnostic-demonstration}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
