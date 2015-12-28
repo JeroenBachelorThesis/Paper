@@ -27,21 +27,25 @@
    \lstset{style=csharp,#1}}
 {\endminipage}
 
+\definecolor{darkgray}{gray}{0.20} % for identifiers
+
 \lstdefinestyle{csharp}{
 	language=[sharp]C, 
 	frame=lr,
 	numbers=left,
 	stepnumber=1,
+	breaklines=true,
 	numbersep=10pt,
 	basicstyle=\ttfamily\small,
 	xleftmargin=\parindent,
 	keywordstyle=\color{blue},
-  commentstyle=\itshape\color{green},
+  commentstyle=\itshape\color{red},
   stringstyle=\color{purple},
-  identifierstyle=\color{gray},
+  identifierstyle=\color{darkgray},
 	showspaces=false,
 	showstringspaces=false,
 	tabsize=2,
 	captionpos=b,
-	rulecolor=\color{blue!80!black}
+	rulecolor=\color{blue!80!black},
+	morekeywords={var}
 }
