@@ -17,7 +17,19 @@ One scenario where this can go wrong if you have a placeholder inside your forma
 string.Format("Hello {0}! My name is {1}", "John");
 \end{lstlisting}
 
-In this section we will create an analyzer that scans our solution for occurrences where \texttt{string.Format} is used with more placeholders than it has arguments. Afterwards we will use this analyzer to scan a few popular repositories and see if we can find anything. The full code can be found in !!REFERENCE ATTACHMENT!!.
+In this section we will create an analyzer that scans our solution for occurrences where \texttt{string.Format} is used with more placeholders than it has arguments. 
+There are some restrictions that apply: certain scenarios are not supported because it's impossible or not feasible to calculate it at compile-time. Additionally, some edge cases have been omitted but will be integrated at a later stage. The characteristics:
+
+\begin{itemize}
+\item The format must be a constant. This can be in the form of a string literal, a constant variable, a compile-time constant concatenation, etc
+\item Interpolated strings that specify the format are ignored for now
+\item If the arguments are passed in using an array and the \texttt{object[]} overload is used, only inline-initialized arrays are considered
+\item The analyzer does not work for just \texttt{string.Format} but for every method that has a 'format' parameter and an \texttt{object} or \texttt{object[]} parameter. This allows us to also support \texttt{Console.WriteLine} for example.
+\item Supports overloads that take a \texttt{CultureInfo} like \texttt{string.Format(CultureInfo, string, object[])}
+\end{itemize}
+
+The full code can be found in !!REFERENCE ATTACHMENT!!.
+
 
 \section{Getting started}
 \label{sec:diagnostic-getting-started}
@@ -81,25 +93,169 @@ public override void Initialize(AnalysisContext context)
 }
 \end{lstlisting}
 
+Once this is done the real work starts: implementing the actual analysis. As we've just defined \texttt{AnalyzeNode} as our handler, we have to define a method that corresponds to that. Depending on what level you register your analyzer you will get a different parameter representing the options you have at that point in time. Since we use \texttt{RegisterSyntaxNodeAction} we will receive a \texttt{SyntaxNodeAnalysisContext} parameter (listing \ref{lst:diagnostic-analyzenode}) containing things like the node that triggered our inspection and the semantic model of the tree it is connected to. If instead you would register your handler on compilation start (\texttt{context.RegisterCompilationStartAction}), you would receive information about the compilation.
 
-\section{Demonstration}
-\label{sec:diagnostic-demonstration}
+\lstset{style=csharp, caption={Defining the analyzing method}}
+\begin{lstlisting}[label={lst:diagnostic-analyzenode}]
+void AnalyzeNode(SyntaxNodeAnalysisContext context)
+{
+}
+\end{lstlisting}
+
+The first thing we do is cast our node (which we receive as a general \texttt{SyntaxNode}) to the appropriate type. Considering our analyzer is only triggered when it comes across an invocation expression, we can safely assume the node is of type \texttt{InvocationExpressionSyntax} (listing \ref{lst:diagnostic-invocation}). Additionally we verify that there is a list of arguments defined to make sure we won't encounter any \texttt{NullReferenceException}
+
+\lstset{style=csharp, caption={Casting the node to the expected type}}
+\begin{lstlisting}[label={lst:diagnostic-invocation}]
+var invocation = 
+	context.Node as InvocationExpressionSyntax;
+if (invocation?.ArgumentList == null)
+{
+	return;
+}
+\end{lstlisting}
+
+The approach taken in this implementation can be summarized like this:
+
+\begin{itemize}
+\item Verify there is a parameter called 'format' in the called method (listing \ref{lst:diagnostic-verifying-parameters})
+\item Verify there is either a single \texttt{object[]} parameter or all the remaining parameters are \texttt{object} (listing \ref{lst:diagnostic-verifying-parameters})
+\item Verify the format string is a compile-time constant (listing \ref{lst:diagnostic-compile-time-constant})
+\item Extract the formatting arguments (listing \ref{lst:diagnostic-extracting-arguments})
+\item In case there is only 1 argument of type array, verify it is a simple inline initialization without referring to a method or retrieving it from another variable (listing \ref{lst:diagnostic-verifying-inline-array-initialization})
+\item Get all the placeholders from the formatting string (listing \ref{lst:diagnostic-extracting-placeholders})
+\item Verify the highest placeholder is greater than the amount of formatting arguments passed in (listing \ref{lst:diagnostic-compare-placeholder-index})
+\end{itemize}
+
+\noindent If and only if all of these conditions have been met, the analyzer will report a diagnostic on the location of the formatting string. We can see all of these steps reflected in the implementation below.
 
 
+\lstset{style=csharp, caption={Verifying the method definition expects a format and object arguments}}
+\begin{lstlisting}[label={lst:diagnostic-verifying-parameters}]
+var invokedMethod = context.SemanticModel
+												   .GetSymbolInfo(invocation);
+var methodSymbol = invokedMethod.Symbol as IMethodSymbol;
 
+var formatParam = 
+ methodSymbol?.Parameters
+							.FirstOrDefault(x => x.Name == "format");
+if (formatParam == null)
+{
+	return;
+}
+var formatIndex = formatParam.Ordinal;
+var formatParams = methodSymbol.Parameters
+															 .Skip(formatIndex + 1)
+															 .ToArray();
+																	
+var hasObjectArray = 
+ formatParams.Length == 1 &&
+ formatParams.All(x => 
+  x.Type.Kind == SymbolKind.ArrayType && 
+	((IArrayTypeSymbol)x.Type).ElementType
+														.SpecialType == 
+														 SpecialType.System_Object);
+																							
+var hasObject = formatParameters.All(x => 
+	x.Type.SpecialType == SpecialType.System_Object);
 
+if (!(hasObject || hasObjectArray))
+{
+	return;
+}
+\end{lstlisting}
 
+\lstset{style=csharp, caption={Verifying the format is a compile-time constant}}
+\begin{lstlisting}[label={lst:diagnostic-compile-time-constant}]
+var formatExpression = invocation.ArgumentList
+																 .Arguments[formatIndex]
+																 .Expression;
+var format = context.SemanticModel
+										.GetConstantValue(formatExpression);
+if (!format.HasValue)
+{
+	return;
+}
+\end{lstlisting}
 
+\lstset{style=csharp, caption={Extracting the formatting arguments}}
+\begin{lstlisting}[label={lst:diagnostic-extracting-arguments}]
+var formatArgs = invocation.ArgumentList
+													 .Arguments
+													 .Skip(formatIndex + 1)
+													 .ToArray();
+var amountOfFormatArguments = formatArguments.Length;
+\end{lstlisting}
 
+\lstset{style=csharp, caption={Verifying single array arguments are inline initialized}}
+\begin{lstlisting}[label={lst:diagnostic-verifying-inline-array-initialization}]
+if (formatArguments.Length == 1)
+{
+	var argumentType = 
+		context.SemanticModel
+					 .GetTypeInfo(formatArgs[0].Expression);
+	if (argumentType.Type == null)
+	{
+		return;
+	}
 
+	if (argumentType.Type.TypeKind == TypeKind.Array)
+	{
+		var methodInvocation = 
+		 formatArgs[0].DescendantNodes()
+									.OfType<InvocationExpressionSyntax>()
+									.FirstOrDefault();
+		if (methodInvocation != null)
+		{
+			return;
+		}
 
+		var inlineArray = 
+		 formatArgs[0].DescendantNodes()
+									.OfType<InitializerExpressionSyntax>()
+									.FirstOrDefault();
+		if (inlineArray != null)
+		{
+			amountOfFormatArguments = inlineArray.Expressions
+																				   .Count;
+			goto placeholderVerification;
+		}
 
+		if (hasObjectArray)
+		{
+			return;
+		}
+	}
+}
+\end{lstlisting}
 
+As you can see in listing \ref{lst:diagnostic-extracting-placeholders} there are references to a helper class that aids us in extracting the placeholders and removing any potential formatting from them. These are defined in \texttt{PlaceholderHelpers.cs} and merely consist of a few regular expressions\footnote{Regular expression: a sequence of characters that define a search pattern} that extract those placeholders from our formatting string, keeping potential escaping characters in mind.
 
+\lstset{style=csharp, caption={Extracting placeholders from the format string}}
+\begin{lstlisting}[label={lst:diagnostic-extracting-placeholders}]
+placeholderVerification:
+var placeholders = 
+	helper.GetPlaceholders((string) formatString.Value)
+        .Cast<Match>()
+        .Select(x => x.Value)
+        .Select(helper.GetPlaceholderIndex)
+        .Select(int.Parse)
+        .ToList();
 
+if (!placeholders.Any())
+{
+	return;
+}
+\end{lstlisting}
 
-
-
-
-
+\lstset{style=csharp, caption={Comparing the highest placeholder index with the number of arguments}}
+\begin{lstlisting}[label={lst:diagnostic-compare-placeholder-index}]
+var highestPlaceholder = placeholders.Max();
+if (highestPlaceholder + 1 > amountOfFormatArguments)
+{
+	context.ReportDiagnostic(
+	 Diagnostic.Create(
+		Rule, 
+		formatExpression.GetLocation()));
+}
+\end{lstlisting}
 
