@@ -113,4 +113,10 @@ On top of that, the “native” support means that there is a seamless integrat
 \section{Introduction to the paper}
 \label{sec-intro-paper}
 
-[TODO]
+In this paper we will take a look at some services that are exposed through the roslyn platform: writing your own Analyzer, SyntaxWalker and SyntaxRewriter. Each of these provide a useful way of analyzing and/or modifying source code without having to bother with any of the overhead that typically comes with it. There are more of these services available like Code Fixes and SymbolVisitors or specific analysis approaches like analyzing \gls{dataflow} and control flow but these are not discussed here.
+
+After the practical examples we will take a look at Roslyn's implementation and answer questions such as "What are the phases it goes through?", "What are these \glspl{syntaxtree} and nodes exactly?" and "How do red-green trees fit into all this exactly?".
+
+We will proceed by taking a detailed look at performance considerations inside the code base. "Performance" in the sense of memory-impact and execution time through coding techniques -- not actual algorithms.
+
+In conclusion there is also a section that highlights some security considerations in Roslyn and the general architecture of it.

@@ -114,9 +114,11 @@ if (invocation?.ArgumentList == null)
 }
 \end{lstlisting}
 
+\begin{minipage}{\linewidth}
 The approach taken in this implementation can be summarized like this:
 
 \begin{itemize}
+\setlength\itemsep{1em}
 \item Verify there is a parameter called 'format' in the called method (listing \ref{lst:diagnostic-verifying-parameters})
 \item Verify there is either a single \texttt{object[]} parameter or all the remaining parameters are \texttt{object} (listing \ref{lst:diagnostic-verifying-parameters})
 \item Verify the format string is a compile-time constant (listing \ref{lst:diagnostic-compile-time-constant})
@@ -127,9 +129,12 @@ The approach taken in this implementation can be summarized like this:
 \end{itemize}
 
 \noindent If and only if all of these conditions have been met, the analyzer will report a diagnostic on the location of the formatting string. We can see all of these steps reflected in the implementation below.
+\end{minipage}
+
 
 
 \lstset{style=csharp, caption={Verifying the method definition expects a format and object arguments}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:diagnostic-verifying-parameters}]
 var invokedMethod = context.SemanticModel
 												   .GetSymbolInfo(invocation);
@@ -163,8 +168,10 @@ if (!(hasObject || hasObjectArray))
 	return;
 }
 \end{lstlisting}
+\end{minipage}
 
 \lstset{style=csharp, caption={Verifying the format is a compile-time constant}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:diagnostic-compile-time-constant}]
 var formatExpression = invocation.ArgumentList
 																 .Arguments[formatIndex]
@@ -185,8 +192,10 @@ var formatArgs = invocation.ArgumentList
 													 .ToArray();
 var amountOfFormatArguments = formatArguments.Length;
 \end{lstlisting}
+\end{minipage}
 
 \lstset{style=csharp, caption={Verifying single array arguments are inline initialized}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:diagnostic-verifying-inline-array-initialization}]
 if (formatArguments.Length == 1)
 {
@@ -227,7 +236,9 @@ if (formatArguments.Length == 1)
 	}
 }
 \end{lstlisting}
+\end{minipage}
 
+\begin{minipage}{\linewidth}
 As you can see in listing \ref{lst:diagnostic-extracting-placeholders} there are references to a helper class that aids us in extracting the placeholders and removing any potential formatting from them. These are defined in \texttt{PlaceholderHelpers.cs} and merely consist of a few regular expressions\footnote{Regular expression: a sequence of characters that define a search pattern} that extract those placeholders from our formatting string, keeping potential escaping characters in mind.
 
 \lstset{style=csharp, caption={Extracting placeholders from the format string}}
@@ -258,6 +269,9 @@ if (highestPlaceholder + 1 > amountOfFormatArguments)
 		formatExpression.GetLocation()));
 }
 \end{lstlisting}
+\end{minipage}
+
+\newpage
 
 \section{Difficulties when implementing an analyzer}
 \label{sec:diagnostic-difficulties}
@@ -267,6 +281,8 @@ Writing a diagnostic introduces a different kind of problem domain than what you
 This means we have a double-edged sword: on one hand we have a very detailed manual that tells us the exact rules of what is possible. On the other hand this is a document of 527 pages (C\#LS v5.0) with often very niche scenarios detailed in it. It is up to the developer to decide which scenarios his analyzer supports but that implies a very strong knowledge of how the language works in itself. For this reason it should be no surprise that writing diagnostics that are truly robust is a really hard task to perform. This introduces a secondary problem: diagnostics should have a very, very low false-positive rate. The more false-positives it produces, the more it will annoy the user and subsequently the more likely it is people will turn off the diagnostic altogether.
 
 Another important aspect to keep in mind is that the code is often in an invalid state. When you think about the expression \texttt{myVar.MyMethod()} you see the end-result which an sich is compliant with the language specification. However before that state was reached you also had \texttt{m}, \texttt{my}, \texttt{myV} and so on. This means that your analyzers have to handle situations with invalid code gracefully. Roslyn is a very smart compiler and is able to parse a \gls{syntaxtree} even when there are errors -- often this means you have half-constructed nodes in the sense that some of its properties are \texttt{null}. For this reason you will often find a lot of \texttt{null} checks in analyzers: using a "soft" cast with \texttt{as} allows us to hesitantly check if some node has been constructed already. Likewise we should \texttt{null}-check every nullable property we access because there is no guarantee that, for example, \texttt{InvocationExpression.ArgumentList} has a value since the user might not yet have typed the opening braces for those arguments.
+
+\newpage
 
 \section{Testing an analyzer}
 \label{sec:diagnostic-testing}
@@ -284,7 +300,10 @@ var diagnostics =
 
 After constructing a basic setup you pass your source code under test (which is just a \texttt{string}) to the in-memory project. Afterwards you add the analyzer(s) you wanted to unleash on your code snippet, look at possible diagnostic results and you're done: you now know if your analyzer had any result. Lucky for us we don't have to implement any of this: the \gls{solution} template that ships with Visual Studio 2015 includes a test project containing helper classes that provide these things for us. An example of such a \gls{unittest} can be found in listing \ref{sec:diagnostics-unit-tests-example}.
 
-\lstset{style=csharp, caption={Unit test verifying our analyzer works with Console.WriteLine and object[] arguments}}
+\clearpage
+
+\lstset{style=csharp, caption={Unit test verifying our analyzer works with Console.WriteLine and object array arguments}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={sec:diagnostics-unit-tests-example}]
 [TestMethod]
 public void MyAnalyzerTest()
@@ -308,6 +327,7 @@ namespace ConsoleApplication1
 		MyAnalyzer.Rule.MessageFormat.ToString());
 }
 \end{lstlisting}
+\end{minipage}
 
 Perhaps the most useful way to find out what scenarios you're lacking is by executing your analyzer on a relatively large number of \gls{opensource} \glspl{solution}. In the end, the community as a whole will probably encounter more distinct usages than you on your own. Finding \gls{opensource} repositories is easily done on github or any other repository service so there is an abundance of scenarios to work with. This also serves multiple purposes:
 
@@ -316,7 +336,3 @@ Perhaps the most useful way to find out what scenarios you're lacking is by exec
 \item Using external repositories greatly expands the number of scenarios your analyzer has been exposed to thus increasing the chance of finding a scenario that you haven't accounted for
 \item Through testing your analyzer you will also find mistakes in \gls{opensource} repositories so it provides a way to pro-actively contribute to the community
 \end{itemize}
-
-
-
-

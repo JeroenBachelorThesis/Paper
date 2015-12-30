@@ -9,7 +9,10 @@ One particular use case SyntaxWalkers can be very useful for is when you want to
 
 Getting started with your own walker is very straightforward: all you have to do is extend the \texttt{CSharpSyntaxWalker} class (listing \ref{lst:syntaxwalker-getting-started}) and walking through it starting from a particular position -- typically the root (listing \ref{lst:syntaxwalker-visiting-from-root}).
 
+\clearpage
+
 \lstset{style=csharp, caption={Getting started with your own SyntaxWalker}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:syntaxwalker-getting-started}]
 public class MySyntaxWalker : CSharpSyntaxWalker
 {
@@ -36,12 +39,16 @@ const string source = @"
 var tree = CSharpSyntaxTree.ParseText(source);
 new MySyntaxWalker().Visit(tree.GetRoot());
 \end{lstlisting}
+\end{minipage}
 
 We're using a few helper methods that will extract the access modifier for us (listing \ref{lst:syntaxwalker-extracting-access-modifier}) and that handle the writing to the console (listing \ref{lst:syntaxwalker-write-to-console}). If no access modifier was found, we'll return a default of \texttt{-}. This is not entirely how C\# would interpret it but it allows us to retain the focus on the SyntaxWalker's core concept.
 
 Notice how in listing \ref{lst:syntaxwalker-write-to-console} we pass in an \texttt{Action} as third parameter. In order to walk through the tree you have to call the base implementation of your visitor -- otherwise it will stop there and no further nodes will be visited. Passing in an \texttt{Action} allows us to defer this step to our helper since it basically acts like a function pointer: the call is not being executed just by passing it along but it will be when you execute the \texttt{Action} itself.
 
+\clearpage
+
 \lstset{style=csharp, caption={Extracting the access modifier}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:syntaxwalker-extracting-access-modifier}]
 private string GetAccessLevel(SyntaxTokenList modifiers)
 {
@@ -66,11 +73,13 @@ private void Write(string text, string accessLevel, Action visitBase)
 	_indentLevel--;
 }
 \end{lstlisting}
+\end{minipage}
 \ifx{\verb+$+}!\fi %% http://tex.stackexchange.com/a/145886/92622
 
 In order to write out our class declarations we have to provide an implementation for the hook that handles class declarations. Each hook receives one argument: the node that is being visited -- this allows us to further inspect that section of the \gls{syntaxtree} and get more information from underlying nodes. In listing \ref{lst:syntaxwalker-handling-visits} you can see how classes, methods and properties are being handled. Note that there is no distinction between an outer and an inner class: on a syntactic level there is absolutely no difference between the two. That immediately highlights the difference between a \texttt{SyntaxWalker} and a \texttt{SymbolWalker}: the former works at the \gls{syntax} level while the latter is already at the binding phase (more on that later in section \ref{sec:compiler-phases}.
 
 \lstset{style=csharp, caption={Handling the visits}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:syntaxwalker-handling-visits}]
 public override void VisitClassDeclaration(ClassDeclarationSyntax node)
 {
@@ -92,6 +101,7 @@ public override void VisitPropertyDeclaration(PropertyDeclarationSyntax node)
 	Write($"prop: {identifier} : {node.Type}", GetAccessLevel(node.Modifiers), () => base.VisitPropertyDeclaration(node));
 }
 \end{lstlisting}
+\end{minipage}
 \ifx{\verb+$$+}!\fi %% http://tex.stackexchange.com/a/145886/92622
 
 
