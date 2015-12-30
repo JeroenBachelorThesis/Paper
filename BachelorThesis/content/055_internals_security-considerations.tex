@@ -1,7 +1,7 @@
 \section{Security Considerations}
 \label{sec:security}
 
-In this last section we will take a look at some security considerations surrounding Roslyn. It is important to realize that the code base by itself is very hard to secure: there are several algorithms in it that have exponential or polynomial time -- executing a DoS\footnote{DoS: Denial of Service by flooding the application with work} is trivial since all you have to do is pass in the appropriate data. For this reason it is very hard to secure a compiler server\parencite{Gocke2015} since legitimate input and malicious input are virtually impossible to distinguish. However, there are some areas where we can identify a (shared) responsibility for developers in the way they utilize the Roslyn platform.
+In this last section we will take a look at some security considerations surrounding Roslyn. It is important to realize that the code base by itself is very hard to secure: there are several algorithms in it that have exponential or polynomial time -- executing a \gls{dos}\footnote{DoS: Denial of Service by flooding the application with work} is trivial since all you have to do is pass in the appropriate data. For this reason it is very hard to secure a compiler server\parencite{Gocke2015} since legitimate input and malicious input are virtually impossible to distinguish. However, there are some areas where we can identify a (shared) responsibility for developers in the way they utilize the Roslyn platform.
 
 \input{content/0551_deterministic_builds.tex}
 \input{content/0552_external_analyzers.tex}

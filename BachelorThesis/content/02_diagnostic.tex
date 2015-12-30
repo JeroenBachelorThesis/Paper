@@ -102,7 +102,7 @@ void AnalyzeNode(SyntaxNodeAnalysisContext context)
 }
 \end{lstlisting}
 
-The first thing we do is cast our node (which we receive as a general \texttt{SyntaxNode}) to the appropriate type. Considering our analyzer is only triggered when it comes across an invocation expression, we can safely assume the node is of type \texttt{InvocationExpressionSyntax} (listing \ref{lst:diagnostic-invocation}). Additionally we verify that there is a list of arguments defined to make sure we won't encounter any \texttt{NullReferenceException}
+The first thing we do is cast our node (which we receive as a general \texttt{SyntaxNode}) to the appropriate type. Considering our analyzer is only triggered when it comes across an \gls{invocation} expression, we can safely assume the node is of type \texttt{InvocationExpressionSyntax} (listing \ref{lst:diagnostic-invocation}). Additionally we verify that there is a list of arguments defined to make sure we won't encounter any \texttt{NullReferenceException}
 
 \lstset{style=csharp, caption={Casting the node to the expected type}}
 \begin{lstlisting}[label={lst:diagnostic-invocation}]
@@ -266,12 +266,12 @@ Writing a diagnostic introduces a different kind of problem domain than what you
 
 This means we have a double-edged sword: on one hand we have a very detailed manual that tells us the exact rules of what is possible. On the other hand this is a document of 527 pages (C\#LS v5.0) with often very niche scenarios detailed in it. It is up to the developer to decide which scenarios his analyzer supports but that implies a very strong knowledge of how the language works in itself. For this reason it should be no surprise that writing diagnostics that are truly robust is a really hard task to perform. This introduces a secondary problem: diagnostics should have a very, very low false-positive rate. The more false-positives it produces, the more it will annoy the user and subsequently the more likely it is people will turn off the diagnostic altogether.
 
-Another important aspect to keep in mind is that the code is often in an invalid state. When you think about the expression \texttt{myVar.MyMethod()} you see the end-result which an sich is compliant with the language specification. However before that state was reached you also had \texttt{m}, \texttt{my}, \texttt{myV} and so on. This means that your analyzers have to handle situations with invalid code gracefully. Roslyn is a very smart compiler and is able to parse a syntax tree even when there are errors -- often this means you have half-constructed nodes in the sense that some of its properties are \texttt{null}. For this reason you will often find a lot of \texttt{null} checks in analyzers: using a "soft" cast with \texttt{as} allows us to hesitantly check if some node has been constructed already. Likewise we should \texttt{null}-check every nullable property we access because there is no guarantee that, for example, \texttt{InvocationExpression.ArgumentList} has a value since the user might not yet have typed the opening braces for those arguments.
+Another important aspect to keep in mind is that the code is often in an invalid state. When you think about the expression \texttt{myVar.MyMethod()} you see the end-result which an sich is compliant with the language specification. However before that state was reached you also had \texttt{m}, \texttt{my}, \texttt{myV} and so on. This means that your analyzers have to handle situations with invalid code gracefully. Roslyn is a very smart compiler and is able to parse a \gls{syntaxtree} even when there are errors -- often this means you have half-constructed nodes in the sense that some of its properties are \texttt{null}. For this reason you will often find a lot of \texttt{null} checks in analyzers: using a "soft" cast with \texttt{as} allows us to hesitantly check if some node has been constructed already. Likewise we should \texttt{null}-check every nullable property we access because there is no guarantee that, for example, \texttt{InvocationExpression.ArgumentList} has a value since the user might not yet have typed the opening braces for those arguments.
 
 \section{Testing an analyzer}
 \label{sec:diagnostic-testing}
 
-Luckily you have useful tools at your disposal in order to increase your confidence in the analyzer's implementation. We've already mentioned before that Roslyn is not just a compiler: it's an entire service package that comes with the compiler. One of those services is the ability to create in-memory solutions (technically: 'workspaces') complete with projects, documents and, yes, syntax trees. In fact, the API is so helpful here that the essence consists of the following two statements:
+Luckily you have useful tools at your disposal in order to increase your confidence in the analyzer's implementation. We've already mentioned before that Roslyn is not just a compiler: it's an entire service package that comes with the compiler. One of those services is the ability to create in-memory \glspl{solution} (technically: 'workspaces') complete with projects, documents and, yes, \glspl{syntaxtree}. In fact, the API is so helpful here that the essence consists of the following two statements:
 
 \lstset{style=csharp, caption={Analyzing an in-memory project}}
 \begin{lstlisting}[label={sec:diagnostics-unit-tests-analysis}]
@@ -282,7 +282,7 @@ var diagnostics =
      .Result;
 \end{lstlisting}
 
-After constructing a basic setup you pass your source code under test (which is just a \texttt{string}) to the in-memory project. Afterwards you add the analyzer(s) you wanted to unleash on your code snippet, look at possible diagnostic results and you're done: you now know if your analyzer had any result. Lucky for us we don't have to implement any of this: the solution template that ships with Visual Studio 2015 includes a test project containing helper classes that provide these things for us. An example of such a unit test can be found in listing \ref{sec:diagnostics-unit-tests-example}.
+After constructing a basic setup you pass your source code under test (which is just a \texttt{string}) to the in-memory project. Afterwards you add the analyzer(s) you wanted to unleash on your code snippet, look at possible diagnostic results and you're done: you now know if your analyzer had any result. Lucky for us we don't have to implement any of this: the \gls{solution} template that ships with Visual Studio 2015 includes a test project containing helper classes that provide these things for us. An example of such a \gls{unittest} can be found in listing \ref{sec:diagnostics-unit-tests-example}.
 
 \lstset{style=csharp, caption={Unit test verifying our analyzer works with Console.WriteLine and object[] arguments}}
 \begin{lstlisting}[label={sec:diagnostics-unit-tests-example}]
@@ -309,12 +309,12 @@ namespace ConsoleApplication1
 }
 \end{lstlisting}
 
-Perhaps the most useful way to find out what scenarios you're lacking is by executing your analyzer on a relatively large number of open-source solutions. In the end, the community as a whole will probably encounter more distinct usages than you on your own. Finding open-source repositories is easily done on github or any other repository service so there is an abundance of scenarios to work with. This also serves multiple purposes:
+Perhaps the most useful way to find out what scenarios you're lacking is by executing your analyzer on a relatively large number of \gls{opensource} \glspl{solution}. In the end, the community as a whole will probably encounter more distinct usages than you on your own. Finding \gls{opensource} repositories is easily done on github or any other repository service so there is an abundance of scenarios to work with. This also serves multiple purposes:
 
 \begin{itemize}
-\item The open-source repositories help you reinforce your confidence in a working analyzer if it doesn't crash on any of them
+\item The \gls{opensource} repositories help you reinforce your confidence in a working analyzer if it doesn't crash on any of them
 \item Using external repositories greatly expands the number of scenarios your analyzer has been exposed to thus increasing the chance of finding a scenario that you haven't accounted for
-\item Through testing your analyzer you will also find mistakes in open-source repositories so it provides a way to contribute pro-actively to the community
+\item Through testing your analyzer you will also find mistakes in \gls{opensource} repositories so it provides a way to pro-actively contribute to the community
 \end{itemize}
 
 

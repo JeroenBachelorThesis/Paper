@@ -1,7 +1,7 @@
 \subsection{Specialized collections}
 \label{sec:specialized-collections}
 
-Collections in the .NET framework are heavily optimized by themselves already but it is done so in a general manner: in the end, the .NET framework will be used by many different people so optimizations have to be weighed against a lot of different scenarios. By creating your own specialized collections, you have the possibility to cut corners that might not be applicable in your domain's scenario. In its crudest form: if you have a \texttt{null} check inside the collection's operations but you know for sure that that can never be \texttt{null} then that is an instruction you can skip. Another important reason to use your own custom collections is to formalize the specific behaviour that belongs to a collection. 
+Collections in the .NET framework are heavily optimized by themselves already but it is done so in a general manner: in the end, the .NET framework will be used by many different people so optimizations have to be weighed against a lot of different scenarios. By creating your own specialized collections, you have the possibility to cut corners that might not be applicable in your domain's scenario. In its crudest form: if you have a \texttt{null} check inside the collection's operations but you know for sure that that can never be \texttt{null} then that is an instruction you can skip. Another important reason to use your own custom collections is to formalize the specific behaviour of your domain that belongs to a collection. 
 
 \subsubsection{IdentifierCollection}
 \label{sec:spec-coll-identifiercollection}
@@ -47,7 +47,7 @@ Notice also the note on line 20: smart usage of existing collections reduces the
 \subsubsection{CachingDictionary}
 \label{sec:spec-coll-cachingdictionary}
 
-Another implementation is the \texttt{CachingDictionary}. As its name indicates, it represents an in-memory caching mechanism based on the \texttt{Dictionary} collection. There is a very interesting implementation detail here: the backing dictionary is a \texttt{ConcurrentDictionary} meaning its exposed methods are thread-safe\footnote{Thread-safety: two manipulating threads that don't interfere with each other}. However, when the backing dictionary is full, it actually swaps that out for a normal \texttt{Dictionary} to allow for less-expensive read-operations without the thread-safety overhead.
+Another implementation is the \texttt{CachingDictionary}. As its name indicates, it represents an in-memory caching mechanism based on the \texttt{Dictionary} collection. There is a very interesting implementation detail here: the backing dictionary is a \texttt{ConcurrentDictionary} meaning its exposed methods are \gls{threadsafe}. However, when the backing dictionary is full, it actually swaps that out for a normal \texttt{Dictionary} to allow for less-expensive read-operations without the thread-safety overhead.
 
 \lstset{style=csharp, caption={CachingDictionary.IsNotFullyPopulatedMap}}
 \begin{lstlisting}
@@ -60,4 +60,3 @@ private static bool IsNotFullyPopulatedMap
 		 ConcurrentDictionary<TKey, ImmutableArray<TElement>>;
 }
 \end{lstlisting}
-

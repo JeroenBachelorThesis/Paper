@@ -20,7 +20,7 @@ We've already highlighted the importance of memory impact in section \ref{sec:sm
 \subsubsection{Re-using nodes}
 \label{sec:re-use-nodes}
 
-The first aspect we will look at is re-using our green nodes. As we established in section \ref{sec:rg-trees-solution}, green nodes have "vague" information: instead of a specific location in the syntax tree they instead contain the width of themselves. This is good because if it would have a specific location, we would (almost) never be able to re-use it: two distinct nodes in a single tree will be located at a different position. However by using the width instead we \textit{can} consider two similar nodes as identical because we merely look at their width which is the same for both.
+The first aspect we will look at is re-using our green nodes. As we established in section \ref{sec:rg-trees-solution}, green nodes have "vague" information: instead of a specific location in the \gls{syntaxtree} they instead contain the width of themselves. This is good because if it would have a specific location, we would (almost) never be able to re-use it: two distinct nodes in a single tree will be located at a different position. However by using the width instead we \textit{can} consider two similar nodes as identical because we merely look at their width which is the same for both.
 
 We can demonstrate this in the following example where we look at the node that represents \texttt{2 + 2}.
 
@@ -49,7 +49,7 @@ private const int CacheMask = CacheSize - 1;
 
 \item First In, First out
 
-When a node is added, a hash key will be calculated. As is typical with hash implementations, this should strive to reach a uniform distribution across the data structure (an array in this case) for optimal performance. Based on this hash key and the mask, the to-be-cached node will be inserted at a certain location of the array. If an entry already exists at this location it will be overwritten, hence the FIFO (First In, First Out) principle.
+When a node is added, a hash key will be calculated. As is typical with hash implementations, this should strive to reach a uniform distribution across the data structure (an array in this case) for optimal performance. Based on this hash key and the mask, the to-be-cached node will be inserted at a certain location of the array. If an entry already exists at this location it will be overwritten, hence the \gls{fifo} (First In, First Out) principle.
 
 \lstset{style=csharp, caption={Inserting a node using FIFO}}
 \begin{lstlisting}
@@ -59,7 +59,7 @@ s_cache[idx] = new Entry(hash, node);
 
 \item Up to 3 children
 
-The last important aspect of this cache is the fact that every node can only have up to three children. If it has any more, the chance of a cache miss is too big\parencite{Sadov2014} so these are not allowed in the first place. This is enforced by making sure there are only overloads available for 1, 2 and 3 nodes.
+The last important aspect of this cache is the fact that every node can only have up to three children. If it has any more, the chance of a \gls{cachemiss} is too big\parencite{Sadov2014} so these are not allowed in the first place. This is enforced by making sure there are only overloads available for 1, 2 and 3 nodes.
 
 \lstset{style=csharp, caption={Caching up to three children}}
 \begin{lstlisting}
@@ -114,7 +114,7 @@ Inside the \texttt{LexerCache} the caches for trivia and tokens are stored by wa
 \begin{itemize}
 \item Small cache size ($2^{11}$ items)
 \item Fast
-\item Thread-unsafe
+\item \glslink{threadsafe}{Thread-unsafe}
 \item Local to the parsing session
 \end{itemize}
 
@@ -123,7 +123,7 @@ Inside the \texttt{LexerCache} the caches for trivia and tokens are stored by wa
 \begin{itemize}
 \item Larger cache size ($2^{16}$ items)
 \item Slower
-\item Thread-safe
+\item \Gls{threadsafe}
 \item Shared between all parsing sessions
 \end{itemize}
 
@@ -164,12 +164,12 @@ internal T FindItem(char[] chars,
 \subsubsection{Measurements}
 \label{sec:re-use-measurements}
 
-In order to visualize the impact of this approach, we will look at three scenarios of syntax tree parsing and see how they affect the heap in terms of object allocation.
+In order to visualize the impact of this approach, we will look at three scenarios of \gls{syntaxtree} parsing and see how they affect the heap in terms of object allocation.
 
 \begin{itemize}
 \item \textbf{Scenario 1:} Parsing two identical syntax trees
 
-\textbf{Expectation:} When the first tree is created, there will be a relatively large allocation which comes from the green nodes, trivial red nodes and the tokens. Since almost all nodes and tokens should be re-used, we expect only very minimal overhead that comes from creating the second syntax tree object itself.
+\textbf{Expectation:} When the first tree is created, there will be a relatively large allocation which comes from the green nodes, trivial red nodes and the tokens. Since almost all nodes and tokens should be re-used, we expect only very minimal overhead that comes from creating the second \gls{syntaxtree} object itself.
 
 \textbf{Demonstration:} 
 
@@ -286,7 +286,7 @@ class MyClass
 \label{img:performance-node-reuse-scenario2-2}
 \end{figure}
 
-\textbf{Conclusion:} As expected there are indeed more additional allocations in experiment 2 compared to experiment 1 (39 vs 13 respectively) which is still dwarfed by the initial allocation of 1650 objects. What we can see in figure \ref{img:performance-node-reuse-scenario2-2} are the additional string allocations and the syntax tree that makes up a field declaration (\texttt{FieldDeclarationSyntax}, \texttt{VariableDeclarationSyntax}, \texttt{VariableDeclaratorSyntax}, and so on).
+\textbf{Conclusion:} As expected there are indeed more additional allocations in experiment 2 compared to experiment 1 (39 vs 13 respectively) which is still dwarfed by the initial allocation of 1650 objects. What we can see in figure \ref{img:performance-node-reuse-scenario2-2} are the additional string allocations and the \gls{syntaxtree} that makes up a field declaration (\texttt{FieldDeclarationSyntax}, \texttt{VariableDeclarationSyntax}, \texttt{VariableDeclaratorSyntax}, and so on).
 
 \item \textbf{Scenario 3:} Iterating through the nodes of a tree
 
@@ -336,9 +336,6 @@ class MyClass
 \label{img:performance-node-reuse-scenario3-2}
 \end{figure}
 
-\textbf{Conclusion:} We can see that a significant amount of allocations has occurred by iterating through our syntax tree. These objects are almost all located in the \texttt{Syntax} namespace which confirms our expectation that we're dealing with red nodes. It's interesting to notice that every type that existed in our green tree now created the corresponding type in the red tree. We also see the \texttt{WeakReference} in play which we will discuss in section \ref{sec:weak-references}.
-
-
-
+\textbf{Conclusion:} We can see that a significant amount of allocations has occurred by iterating through our \gls{syntaxtree}. These objects are almost all located in the \texttt{Syntax} namespace which confirms our expectation that we're dealing with red nodes. It's interesting to notice that every type that existed in our green tree now created the corresponding type in the red tree. We also see the \texttt{WeakReference} in play which we will discuss in section \ref{sec:weak-references}.
 
 \end{itemize}

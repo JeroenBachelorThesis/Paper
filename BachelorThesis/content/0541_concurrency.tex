@@ -3,7 +3,7 @@
 
 \epigraph{A concurrent system is one where a computation can make progress without waiting for all other computations to complete -- where more than one computation can make progress at "the same time"}{\textit{Abraham Silberschatz \\ \footnotesize{Operating System Concepts 9th edition}}}
 
-When you think of performance, concurrency is often one of the first aspects that come to mind. As such, it also takes a prominent place in Roslyn's architecture. We have already established that one of the characteristics of a syntax tree is its immutability -- the inability to make changes to it after it is constructed. This is done with concurrency in mind: if we create a new tree for every concurrent operation, we have the guarantee that changes from operation X does not affect the tree that is being manipulated by operation Y. There are several more areas of concurrency though:
+When you think of performance, concurrency is often one of the first aspects that come to mind. As such, it also takes a prominent place in Roslyn's architecture. We have already established that one of the characteristics of a \gls{syntaxtree} is its \glslink{immutable}{immutability} -- the inability to make changes to it after it is constructed. This is done with concurrency in mind: if we create a new tree for every concurrent operation, we have the guarantee that changes from operation X does not affect the tree that is being manipulated by operation Y. There are several more areas of concurrency though:
 
 \subsubsection{Source parsing}
 \label{sec:concur-source-parsing}
@@ -57,7 +57,7 @@ When we bind \texttt{SubType} we have to bind \texttt{BaseType} as well because,
 \subsubsection{Method body compilation }
 \label{sec:concur-method-body-compilation}
 
-Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should emit the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in section \ref{sec:deterministic-builds}. 
+Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should \gls{emit} the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in section \ref{sec:deterministic-builds}. 
 
 Important to note is that method bodies are not emitted if there were any declaration errors. If that is the case, only binding is done for those aspects that can help in diagnosing the issue.\parencite{Sadov2014}
 

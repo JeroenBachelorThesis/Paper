@@ -1,11 +1,11 @@
 \chapter{Implementing a SyntaxRewriter}
 \label{sec:syntaxrewriter}
 
-A \textbf{SyntaxRewriter} is very similar to the SyntaxWalker we saw in chapter \ref{sec:syntaxwalker} and provides us with a clean API which we can use to, as the name gave away, rewrite certain parts of the syntax tree. Here, too, we are working on the syntactic level so we can't make use of the 'smarter' semantic model and accompanying symbols. However, the scenario we will look at suffices perfectly with just syntactic knowledge so there's no problem here.
+A \textbf{SyntaxRewriter} is very similar to the SyntaxWalker we saw in chapter \ref{sec:syntaxwalker} and provides us with a clean \gls{api} which we can use to, as the name gave away, rewrite certain parts of the \gls{syntaxtree}. Here, too, we are working on the syntactic level so we can't make use of the 'smarter' \gls{semanticmodel} and accompanying symbols. However, the scenario we will look at suffices perfectly with just syntactic knowledge so there's no problem here.
 
 A common dispute\footnote{\url{http://stackoverflow.com/q/4540146/1864167}} between C\# programmers is whether to use an underscore as a prefix for private fields. This makes a great scenario for us to test a SyntaxRewriter: we will change all \texttt{private} fields to use an underscore as prefix. Again we will ignore the scenario where no access modifier is defined and just pretend that we don't handle those to keep focus on the rewriter itself.
 
-Just like the SyntaxWalker, we have to start by parsing our source code as a syntax tree. Once we have that, we do the same thing as we did before: retrieve the rootnode and start traversing your tree from there. After all defined transformations have been applied, we will format the newly generated tree and display it (listing \ref{lst:syntaxrewriter-getting-started}). Important to note: the tree we pass in and get back are \textit{not} the same: everything is immutable in Roslyn (more on that in section \ref{sec:syntax-tree}).
+Just like the SyntaxWalker, we have to start by parsing our source code as a \gls{syntaxtree}. Once we have that, we do the same thing as we did before: retrieve the root node and start traversing your tree from there. After all defined transformations have been applied, we will format the newly generated tree and display it (listing \ref{lst:syntaxrewriter-getting-started}). Important to note: the tree we pass in and get back are \textit{not} the same: everything is \gls{immutable} in Roslyn (more on that in section \ref{sec:syntax-tree}).
 
 \lstset{style=csharp, caption={Getting started with a SyntaxRewriter}}
 \begin{lstlisting}[label={lst:syntaxrewriter-getting-started}]
@@ -52,7 +52,7 @@ x 			// First declarator
 y = 10 	// Second declarator
 \end{lstlisting}
 
-The importance of realizing everything is immutable really shows itself in listing \ref{lst:syntaxrewriter-implementing-syntaxrewriter}. Here we override the \texttt{VisitFieldDeclaration} method which is triggered every time the rewriter comes across a field. We can also see that the method returns a \texttt{SyntaxNode} which will be the \texttt{FieldDeclarationSyntax} we construct with the new identifier.
+The importance of realizing everything is \gls{immutable} really shows itself in listing \ref{lst:syntaxrewriter-implementing-syntaxrewriter}. Here we override the \texttt{VisitFieldDeclaration} method which is triggered every time the rewriter comes across a field. We can also see that the method returns a \texttt{SyntaxNode} which will be the \texttt{FieldDeclarationSyntax} we construct with the new identifier.
 
 When we look at the implementation of this method we can distinguish a few steps:
 
@@ -65,7 +65,7 @@ When we look at the implementation of this method we can distinguish a few steps
 \item Create a new field based on this new declaration and add the \texttt{Formatter} annotation to it so we can properly format the changed nodes afterwards
 \end{itemize}
 
-Immediately it's clear that we will have to create a lot of new objects to represent our changed syntax nodes. This is a result of the public Roslyn API being immutable but luckily there are a lot of useful factory methods available in \texttt{SyntaxFactory} to create those elements for us. This also represents the key consideration when manipulating a syntax tree: when a node is changed, every ancestor node will also be changed up until the highest level which can be a simple root node or possibly a \texttt{Document} or \texttt{Solution}. In our rewriter we should only replace until the level that was visited: a field declaration. Internally, the rewriter will then do the additional replacing by itself.
+Immediately it's clear that we will have to create a lot of new objects to represent our changed syntax nodes. This is a result of the public Roslyn \gls{api} being \gls{immutable} but luckily there are a lot of useful factory methods available in \texttt{SyntaxFactory} to create those elements for us. This also represents the key consideration when manipulating a \gls{syntaxtree}: when a node is changed, every ancestor node will also be changed up until the highest level which can be a simple root node or possibly a \texttt{Document} or \texttt{Solution}. In our rewriter we should only replace until the level that was visited: a field declaration. Internally, the rewriter will then do the additional replacing by itself.
 
 \lstset{style=csharp, caption={Implementing the SyntaxRewriter}}
 \begin{lstlisting}[label={lst:syntaxrewriter-implementing-syntaxrewriter}]

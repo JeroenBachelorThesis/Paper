@@ -6,9 +6,9 @@ At its core, Roslyn creates tree representations from any given piece of code. W
 \subsection{Syntax Tree}
 \label{sec:syntax-tree}
 
-The syntax tree in itself is the starting point from which a lot of aspects start or end: in a CodeFix you can end up replacing the original tree with the modified one while it might as well be the starting point with which you interpret plain text as something you can inspect.
+The \gls{syntaxtree} in itself is the starting point from which a lot of aspects start or end: in a CodeFix you can end up replacing the original tree with the modified one while it might as well be the starting point with which you interpret plain text as something you can inspect.
 
-Creating a syntax tree can be as easy as parsing plain text:
+Creating a \gls{syntaxtree} can be as easy as parsing plain text:
 
 \lstset{style=csharp, caption={}}
 \begin{lstlisting}
@@ -27,15 +27,15 @@ which will result in the tree as shown in figure \ref{fig:tree-structure-class-d
 \label{fig:tree-structure-class-definition}
 \end{figure}
 
-A syntax tree represents at the highest level a single top-level type (class or struct) with all its containing members -- fields, methods and nested types. Multiple syntax trees can be grouped in a compilation. It is however not a requirement to represent a type when parsing a syntax tree: any kind of statement or expression can be parsed and represented in a syntax tree. In the end, every syntax node represents a tree of itself. This idea of trees comprised of other trees is what enables interesting performance optimizations (more on that later). 
+A \gls{syntaxtree}represents at the highest level a single top-level type (class or struct) with all its containing members -- fields, methods and nested types. Multiple \glspl{syntaxtree} can be grouped in a compilation. It is however not a requirement to represent a type when parsing a \gls{syntaxtree}: any kind of statement or expression can be parsed and represented in a \gls{syntaxtree}. In the end, every syntax node represents a tree of itself. This idea of trees comprised of other trees is what enables interesting performance optimizations (more on that later). 
 
-Syntax trees have a few very important properties:
+\Glspl{syntaxtree} have a few very important properties:
 
 \begin{itemize}
-	\item Full fidelity -- The guarantee that every character, whitespace, comment, line ending, etc from the source code is represented in the syntax tree.
-	\item Round-trippable -- Following from the above: translating the source code to a syntax tree and back results in exactly the same code.
+	\item Full fidelity -- The guarantee that every character, whitespace, comment, line ending, etc from the source code is represented in the \gls{syntaxtree}.
+	\item Round-trippable -- Following from the above: translating the source code to a \gls{syntaxtree} and back results in exactly the same code.
 	\item Code as written, not as executed -- When you use the \texttt{async} and \texttt{await} keywords it will represent these keywords in the syntax tree and not the state machine that the compiler generates from it.
-	\item Immutable -- Every syntax tree is immutable. This allows for thread-safe operations since everything handles its own "copy" of the syntax tree anyway.
+	\item \gls{immutable} -- Every \gls{syntaxtree} is immutable. This allows for \gls{threadsafe} operations since everything handles its own "copy" of the \gls{syntaxtree} anyway.
 \end{itemize}
 
 \subsection{Syntax Node}
@@ -64,7 +64,7 @@ The last aspect of the tree is the syntax trivia. This is slightly misleading be
 
 Syntax trivia is the rest of the source code with no actual semantic meaning: comments, whitespace, newlines, etc. Important to note are preprocessing directives: these are also considered trivia.
 
-It is important to represent the trivia inside the syntax tree in order to ensure full-fidelity: if we wouldn't, we would have a differently layed out source code after translating our source to a syntax tree and back.
+It is important to represent the trivia inside the \gls{syntaxtree} in order to ensure full-fidelity: if we wouldn't, we would have a differently layed out source code after translating our source to a syntax tree and back.
 
 
 
