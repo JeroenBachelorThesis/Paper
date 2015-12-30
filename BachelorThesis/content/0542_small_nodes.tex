@@ -1,3 +1,4 @@
+\newpage
 \subsection{Small nodes}
 \label{sec:small-nodes}
 
@@ -9,6 +10,7 @@ For this reason the Roslyn team decided to store certain information related to 
 
 What Roslyn does instead is store the diagnostics inside the syntax node's associated \gls{syntaxtree} and when the diagnostic information is actually requested, it will look them up inside that tree.
 
+\begin{minipage}{\linewidth}
 \noindent This becomes clear when we take a look at the execution path in the code:
 
 \lstset{style=csharp, caption={CSharpSyntaxNode.GetDiagnostics}}
@@ -18,6 +20,7 @@ public new IEnumerable<Diagnostic> GetDiagnostics()
 	return this.SyntaxTree.GetDiagnostics(this);
 }
 \end{lstlisting}
+\end{minipage}
 
 \noindent which passes it on to the following chain of calls inside the \gls{syntaxtree}:
 

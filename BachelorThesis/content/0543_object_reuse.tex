@@ -1,3 +1,4 @@
+\newpage
 \subsection{Object re-use}
 \label{sec:object-reuse}
 
@@ -87,6 +88,7 @@ private static bool CanBeCached(GreenNode child1,
 
 \end{itemize}
 
+\begin{minipage}{\linewidth}
 \subsubsection{Re-using tokens}
 \label{sec:re-use-tokens}
 
@@ -106,6 +108,7 @@ if (state == QuickScanState.Done)
 	return token;
 }
 \end{lstlisting}
+\end{minipage}
 
 Inside the \texttt{LexerCache} the caches for trivia and tokens are stored by way of a \texttt{TextKeyedCache} implementation. A \texttt{TextKeyedCache} maintains two levels of caching: a local one and a shared one, each with their own characteristics.
 
@@ -161,6 +164,7 @@ internal T FindItem(char[] chars,
 }
 \end{lstlisting}
 
+\newpage
 \subsubsection{Measurements}
 \label{sec:re-use-measurements}
 
@@ -220,14 +224,19 @@ class MyClass
 \label{img:performance-node-reuse-scenario1-3}
 \end{figure}
 
+\begin{minipage}{\linewidth}
 \textbf{Conclusion:} The first parsing session creates a lot of different objects while the next session only creates a relative tiny amount of new objects. An interesting aspect to note here is the kind of objects we see created in that first run (see figure \ref{img:performance-node-reuse-scenario1-2}): every token is cached when that first parsing session starts which causes a lot of initial allocations. 
 When we look further down the list of allocated objects we also see caches, the parser, specific object pools, factories and a lot more. However when we now look at the second parsing session and see how it affects the heap we see none of this: there are a few new nodes representing the broad lines of the tree but no new tokens, identifiers, parsers, caches, etc have been allocated.
+\end{minipage}
 
 
 \item \textbf{Scenario 2:} Parsing two slightly different syntax trees
 
 \textbf{Expectation:} Corresponding to the previous experiment, we expect a lot of allocations in the first parsing session. The second parsing session should display a slightly higher amount of newly allocated objects than in the first experiment but it should still be relatively little considering most of the allocations came from tree-independent work like populating caches and creating parsers.
 
+\clearpage
+
+\begin{minipage}{\linewidth}
 \textbf{Demonstration:} 
 
 \lstset{style=csharp, caption={Parsing two slightly different syntax trees}}
@@ -269,6 +278,7 @@ class MyClass
 	}
 }
 \end{lstlisting}
+\end{minipage}
 
 \textbf{Results:}
 
@@ -288,11 +298,13 @@ class MyClass
 
 \textbf{Conclusion:} As expected there are indeed more additional allocations in experiment 2 compared to experiment 1 (39 vs 13 respectively) which is still dwarfed by the initial allocation of 1650 objects. What we can see in figure \ref{img:performance-node-reuse-scenario2-2} are the additional string allocations and the \gls{syntaxtree} that makes up a field declaration (\texttt{FieldDeclarationSyntax}, \texttt{VariableDeclarationSyntax}, \texttt{VariableDeclaratorSyntax}, and so on).
 
+\newpage
+
 \item \textbf{Scenario 3:} Iterating through the nodes of a tree
 
 \textbf{Expectation:} We know that red nodes are materialized lazily: they have a trivial structure when the green node is constructed and get expanded to full-fledged red nodes only when this is requested. By retrieving all the descendent nodes from the root of the tree, we expect a lot of extra allocations (relative to previous experiments). If we look at previous results we can tell they are all green nodes because the objects are contained in the \texttt{InternalSyntax} namespace. By materializing, we should find allocations from objects based in the \texttt{Syntax} namespace -- the red nodes that are exposed through APIs.
 
-\textbf{Demonstration:} 
+\textbf{Demonstration:}
 
 \lstset{style=csharp, caption={Iterating through the nodes of a tree}}
 \begin{lstlisting}
@@ -320,21 +332,24 @@ class MyClass
 }
 \end{lstlisting}
 
+\begin{minipage}{\linewidth}
 \textbf{Results:}
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=1]{performance-node-reuse-scenario3-1}
+\includegraphics[scale=0.90]{performance-node-reuse-scenario3-1}
 \caption{Memory impact comparison when materializing red nodes}
 \label{img:performance-node-reuse-scenario3-1}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.80]{performance-node-reuse-scenario3-2}
+\includegraphics[scale=0.75]{performance-node-reuse-scenario3-2}
 \caption{Memory impact when materializing red nodes}
 \label{img:performance-node-reuse-scenario3-2}
 \end{figure}
+\end{minipage}
+
 
 \textbf{Conclusion:} We can see that a significant amount of allocations has occurred by iterating through our \gls{syntaxtree}. These objects are almost all located in the \texttt{Syntax} namespace which confirms our expectation that we're dealing with red nodes. It's interesting to notice that every type that existed in our green tree now created the corresponding type in the red tree. We also see the \texttt{WeakReference} in play which we will discuss in section \ref{sec:weak-references}.
 

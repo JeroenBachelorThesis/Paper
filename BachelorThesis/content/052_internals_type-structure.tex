@@ -29,6 +29,7 @@ which will result in the tree as shown in figure \ref{fig:tree-structure-class-d
 
 A \gls{syntaxtree}represents at the highest level a single top-level type (class or struct) with all its containing members -- fields, methods and nested types. Multiple \glspl{syntaxtree} can be grouped in a compilation. It is however not a requirement to represent a type when parsing a \gls{syntaxtree}: any kind of statement or expression can be parsed and represented in a \gls{syntaxtree}. In the end, every syntax node represents a tree of itself. This idea of trees comprised of other trees is what enables interesting performance optimizations (more on that later). 
 
+\begin{minipage}{\linewidth}
 \Glspl{syntaxtree} have a few very important properties:
 
 \begin{itemize}
@@ -37,6 +38,7 @@ A \gls{syntaxtree}represents at the highest level a single top-level type (class
 	\item Code as written, not as executed -- When you use the \texttt{async} and \texttt{await} keywords it will represent these keywords in the syntax tree and not the state machine that the compiler generates from it.
 	\item \gls{immutable} -- Every \gls{syntaxtree} is immutable. This allows for \gls{threadsafe} operations since everything handles its own "copy" of the \gls{syntaxtree} anyway.
 \end{itemize}
+\end{minipage}
 
 \subsection{Syntax Node}
 \label{sec:syntax-node}
