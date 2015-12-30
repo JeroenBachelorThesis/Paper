@@ -30,6 +30,7 @@ Rationale:
 An interesting addition here is the implementation of \texttt{SharedPools}. As the name indicates, this is a class that manages the sharing of object pools. There are two ways to use this class:
 
 \begin{itemize}
+\begin{minipage}{\linewidth}
 \item As a single, standalone pool
 
 This does not share the pool but instead just makes it easier to create your object pools. For this purpose you can choose between a small pool (20 elements) and a big pool (100 elements). For example in the case of a small pool you call
@@ -43,6 +44,7 @@ public static ObjectPool<T> Default<T>()
 	return DefaultNormalPool<T>.Instance;
 }
 \end{lstlisting}
+\end{minipage}
 
 This method, in turn, will lazily create a new pool the first time a pool of that type is requested. This pool will defer to the beforementioned \texttt{ObjectPool} implementation:
 
@@ -66,6 +68,7 @@ Taking the entire idea another step further, you can also share the pools themse
 Inside the \texttt{SharedPools} we have a few pre-defined pools for general use cases. One of those is \texttt{StringIgnoreCaseHashSet} which provides a hashset pool that compares its elements case-insensitively.
 
 \lstset{style=csharp, caption={SharedPools.StringIgnoreCaseHashSet}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}
 public static readonly 
 	ObjectPool<HashSet<string>> StringIgnoreCaseHashSet =
@@ -73,6 +76,7 @@ public static readonly
 		() => new HashSet<string>(
 							StringComparer.OrdinalIgnoreCase), 20);
 \end{lstlisting}
+\end{minipage}
 
 \subitem As a pre-defined type
 

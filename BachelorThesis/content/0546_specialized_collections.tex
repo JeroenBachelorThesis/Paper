@@ -1,3 +1,4 @@
+\newpage
 \subsection{Specialized collections}
 \label{sec:specialized-collections}
 
@@ -9,6 +10,9 @@ Collections in the .NET framework are heavily optimized by themselves already bu
 An example of the latter can be found in the form the \texttt{IdentifierCollection}. This class acts as a wrapper around a \texttt{Dictionary} that maps a certain key to one or more alternative spellings of that key. While in essence nothing more than a mapper between key and value, it provides more intuitive methods to interact with such as \texttt{AddIdentifier}, \texttt{AddInitialSpelling} and \texttt{AddAdditionalSpelling}.
 In this case, we can see a performance consideration in the way it stores the alternative identifiers: the backing \texttt{Dictionary} is actually mapping a \texttt{string} to an \texttt{object} instead of an array as one would expect. The reason this is done is to avoid having to allocate an array when there is just one alternative identifier -- now we can just define it as a \texttt{string} without the need for an array.
 
+\clearpage
+
+\begin{minipage}{\linewidth}
 We can see this consideration reflected when we try to add a new spelling to a given key:
 
 \lstset{style=csharp, caption={IdentifierCollection.AddAdditionalSpelling}}
@@ -41,9 +45,11 @@ private void AddAdditionalSpelling(string identifier,
 	}
 }
 \end{lstlisting}
+\end{minipage}
 
 Notice also the note on line 20: smart usage of existing collections reduces the complexity of our own code.
 
+\newpage
 \subsubsection{CachingDictionary}
 \label{sec:spec-coll-cachingdictionary}
 

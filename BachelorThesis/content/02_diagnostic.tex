@@ -56,7 +56,7 @@ The general layout of an analyzer is straightforward and consists of the followi
 
 The two most important ones (that the user will get into contact with) are the severity and the message. The severity determines whether it will be a warning, an error, info or something that only shows up when you look at the context-actions for a specific line of code ('hidden'). The message is the message the user sees in his 'Error List' window and is essential to tell the user what's wrong.
 
-This \gls{metadata} is exposed to the underlying architecture by means of the \texttt{SupportedDiagnostics} property as we can see in listing \ref{lst:diagnostic-metadata}. Specifying which languages are supported has to be done separately through an annotation (listing \ref{lst:diagnostic-supported-lang}).
+This \gls{metadata} is exposed to the underlying architecture by means of the \\ \texttt{SupportedDiagnostics} property as we can see in listing \ref{lst:diagnostic-metadata}. Specifying which languages are supported has to be done separately through an annotation (listing \ref{lst:diagnostic-supported-lang}).
 
 \lstset{style=csharp, caption={Configuring metadata for your analyzer}}
 \begin{lstlisting}[label={lst:diagnostic-metadata}]
@@ -102,7 +102,7 @@ void AnalyzeNode(SyntaxNodeAnalysisContext context)
 }
 \end{lstlisting}
 
-The first thing we do is cast our node (which we receive as a general \texttt{SyntaxNode}) to the appropriate type. Considering our analyzer is only triggered when it comes across an \gls{invocation} expression, we can safely assume the node is of type \texttt{InvocationExpressionSyntax} (listing \ref{lst:diagnostic-invocation}). Additionally we verify that there is a list of arguments defined to make sure we won't encounter any \texttt{NullReferenceException}
+The first thing we do is cast our node (which we receive as a general \texttt{SyntaxNode}) to the appropriate type. Considering our analyzer is only triggered when it comes across an \gls{invocation} expression, we can safely assume the node is of type \\ \texttt{InvocationExpressionSyntax} (listing \ref{lst:diagnostic-invocation}). Additionally we verify that there is a list of arguments defined to make sure we won't encounter any \texttt{NullReferenceException}
 
 \lstset{style=csharp, caption={Casting the node to the expected type}}
 \begin{lstlisting}[label={lst:diagnostic-invocation}]
