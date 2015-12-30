@@ -57,10 +57,20 @@
 
 
 \begin{abstract}
+Ensuring code quality is hard and is often the victim of compromises. Current build systems can verify code quality when you check your code in to source control but that requires a round-trip to the build server and back. Additionally, it is a lot harder to have personalized tools that ensure the code is just the way you like it. 
 
+Roslyn is a "Compiler as a Service" platform targeting C\# and VB.NET and which is also implemented in those languages. Roslyn provides APIs to developers with which they can build their own code verification tools. These tools can be used both while actively developing (through IDE hints and fixes), as a separate CLI tool or any other way you like. Roslyn exposes services that allow you to easily write your own diagnostics which can help with ensuring code quality. Due to its open-source character, it also provides a very interesting look inside a modern high-end compiler platform.
+
+In this paper we will implement a diagnostic using a real-world concern: ensuring compile-time safety for the format in a \texttt{string.Format} call. We will also take a look at how we can walk through and rewrite syntax trees using the \texttt{SyntaxWalker} and \texttt{SyntaxRewriter}. Afterwards we will discuss Roslyn's internals: the different compiler phases, the type structure and the architectural idea behind red-green trees. Next we will take a closer look at several performance-related considerations and at the end there will also be a review of some security implications that come with the platform.
 \end{abstract}
 
 \chapter*{Foreword}
 \label{ch:foreword}
+Code quality has always been dear to my heart: if I'm not reviewing other people's code on StackExchange's Code Review community, I'm tearing down my old code and replacing it with something better -- for the time being. When I found out about the Roslyn project it would only make sense to expand to writing my own diagnostics: it allows me to review code in an automated manner, something any programmer would appreciate. Through my work on VSDiagnostics, a collection of around 45 diagnostics at the time of writing, I have immersed myself in a world of magical code and mystical compilers. 
+
+If its Github activity is to be believed, the project is starting to gain a little bit of traction. A separate project of mine to unit test diagnostics is even more popular which just goes to show that there is definitely an interest from the developer community to start writing their own customized analysis tools.
+
+First of all I would like to thank my parents for their continued support all this time. This thesis marks the near-end of my time in school and throughout that period they have always had my back. I would also like to extend my gratitude to Mr Asselberg for his guidance while writing the paper and Mr Laks for his expert knowledge on the subject. Additionally, others who have helped me understand Roslyn better include but are not limited to Kevin Pilch-Bisson, Jason Malinowski, Andy Gocke, Phil Gref and Andy Pelzer.
+
 
 \tableofcontents

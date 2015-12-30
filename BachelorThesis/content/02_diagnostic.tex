@@ -18,7 +18,7 @@ string.Format("Hello {0}! My name is {1}", "John");
 \end{lstlisting}
 
 In this section we will create an analyzer that scans our \gls{solution} for occurrences where \texttt{string.Format} is used with more placeholders than it has arguments. 
-There are some restrictions that apply: certain scenarios are not supported because it's impossible or not feasible to calculate it at compile-time. Additionally, some edge cases have been omitted but will be integrated at a later stage. The characteristics:
+There are some restrictions that apply: certain scenarios are not supported because it's impossible or not feasible to calculate it at compile-time. Additionally, some edge cases have been omitted but will be integrated at a later stage. An analyzer is often coupled with a so-called "Code Fix": these allow you to rewrite the \gls{syntax} when an analyzer is triggered. This would not be relevant here since we can't know how the problem of this analyzer should be resolved. An example of syntax rewriting can be found in chapter \ref{sec:syntaxrewriter} The characteristics:
 
 \begin{itemize}
 \item The format must be a constant. This can be in the form of a string literal, a constant variable, a \gls{compiletimeconstant} concatenation, etc
