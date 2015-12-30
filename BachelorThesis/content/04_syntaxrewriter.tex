@@ -71,6 +71,8 @@ The importance of realizing everything is \gls{immutable} really shows itself in
 
 Immediately it's clear that we will have to create a lot of new objects to represent our changed syntax nodes. This is a result of the public Roslyn \gls{api} being \gls{immutable} but luckily there are a lot of useful factory methods available in \texttt{SyntaxFactory} to create those elements for us. This also represents the key consideration when manipulating a \gls{syntaxtree}: when a node is changed, every ancestor node will also be changed up until the highest level which can be a simple root node or possibly a \texttt{Document} or \texttt{Solution}. In our rewriter we should only replace until the level that was visited: a field declaration. Internally, the rewriter will then do the additional replacing by itself.
 
+\clearpage
+
 \lstset{style=csharp, caption={Implementing the SyntaxRewriter}}
 \begin{lstlisting}[label={lst:syntaxrewriter-implementing-syntaxrewriter}]
 public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
