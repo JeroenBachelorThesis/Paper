@@ -1,6 +1,6 @@
-\ifglsentryexists{ManagedLanguage}{}%
+\ifglsentryexists{managedlanguage}{}%
 {%
-\gls@defglossaryentry{ManagedLanguage}%
+\gls@defglossaryentry{managedlanguage}%
 {%
 name={managed language},%
 sort={managed language},%
@@ -9,8 +9,8 @@ first={managed language},%
 firstplural={managed languages},%
 text={managed language},%
 plural={managed languages},%
-description={a language which offsets memory management from the user to a Garbage Collector},%
-descriptionplural={a language which offsets memory management from the user to a Garbage Collector},%
+description={A language which offsets memory management from the user to a Garbage Collector},%
+descriptionplural={A language which offsets memory management from the user to a Garbage Collector},%
 symbol={\relax },%
 symbolplural={\relax },%
 user1={},%
@@ -23,6 +23,1026 @@ long={},%
 longplural={},%
 short={},%
 shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{msil}{}%
+{%
+\gls@defglossaryentry{msil}%
+{%
+name={MSIL},%
+sort={MSIL},%
+type={main},%
+first={Microsoft Intermediate Language\glsspace (MSIL)},%
+firstplural={Microsoft Intermediate Language\acrpluralsuffix \glsspace (MSIL\acrpluralsuffix )},%
+text={MSIL},%
+plural={MSIL\acrpluralsuffix },%
+description={Microsoft Intermediate Language},%
+descriptionplural={Microsoft Intermediate Language\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Microsoft Intermediate Language},%
+longplural={Microsoft Intermediate Languages},%
+short={MSIL},%
+shortplural={MSILs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{semanticmodel}{}%
+{%
+\gls@defglossaryentry{semanticmodel}%
+{%
+name={semantic model},%
+sort={semantic model},%
+type={main},%
+first={semantic model},%
+firstplural={semantic models},%
+text={semantic model},%
+plural={semantic models},%
+description={A model of the meaning attributed to symbols},%
+descriptionplural={A model of the meaning attributed to symbols},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{syntax}{}%
+{%
+\gls@defglossaryentry{syntax}%
+{%
+name={syntax},%
+sort={syntax},%
+type={main},%
+first={syntax},%
+firstplural={syntaxs},%
+text={syntax},%
+plural={syntaxs},%
+description={A collection of plain-text tokens that make up source code},%
+descriptionplural={A collection of plain-text tokens that make up source code},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{dataflow}{}%
+{%
+\gls@defglossaryentry{dataflow}%
+{%
+name={data flow},%
+sort={data flow},%
+type={main},%
+first={data flow},%
+firstplural={data flows},%
+text={data flow},%
+plural={data flows},%
+description={The execution path of a piece of code},%
+descriptionplural={The execution path of a piece of code},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{opensource}{}%
+{%
+\gls@defglossaryentry{opensource}%
+{%
+name={open-source},%
+sort={opensource},%
+type={main},%
+first={open-source},%
+firstplural={open-sources},%
+text={open-source},%
+plural={open-sources},%
+description={Source code that is freely available and which can be modified by the public},%
+descriptionplural={Source code that is freely available and which can be modified by the public},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{bootstrap}{}%
+{%
+\gls@defglossaryentry{bootstrap}%
+{%
+name={bootstrap},%
+sort={bootstrap},%
+type={main},%
+first={bootstrap},%
+firstplural={bootstraps},%
+text={bootstrap},%
+plural={bootstraps},%
+description={A self-starting process, a compiler that compiles itself},%
+descriptionplural={A self-starting process, a compiler that compiles itself},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{gc}{}%
+{%
+\gls@defglossaryentry{gc}%
+{%
+name={Garbage Collector},%
+sort={Garbage Collector},%
+type={main},%
+first={Garbage Collector},%
+firstplural={Garbage Collectors},%
+text={Garbage Collector},%
+plural={Garbage Collectors},%
+description={A service which allocates and frees memory},%
+descriptionplural={A service which allocates and frees memory},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{unittest}{}%
+{%
+\gls@defglossaryentry{unittest}%
+{%
+name={unit test},%
+sort={unit test},%
+type={main},%
+first={unit test},%
+firstplural={unit tests},%
+text={unit test},%
+plural={unit tests},%
+description={A self-contained automated test which has no interaction with external systems and tests a software execution path},%
+descriptionplural={A self-contained automated test which has no interaction with external systems and tests a software execution path},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{compiler}{}%
+{%
+\gls@defglossaryentry{compiler}%
+{%
+name={compiler},%
+sort={compiler},%
+type={main},%
+first={compiler},%
+firstplural={compilers},%
+text={compiler},%
+plural={compilers},%
+description={A program that translates code from one language to another},%
+descriptionplural={A program that translates code from one language to another},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{pr}{}%
+{%
+\gls@defglossaryentry{pr}%
+{%
+name={PR},%
+sort={PR},%
+type={main},%
+first={Pull Request\glsspace (PR)},%
+firstplural={Pull Request\acrpluralsuffix \glsspace (PR\acrpluralsuffix )},%
+text={PR},%
+plural={PR\acrpluralsuffix },%
+description={Pull Request},%
+descriptionplural={Pull Request\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Pull Request},%
+longplural={Pull Requests},%
+short={PR},%
+shortplural={PRs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{parser}{}%
+{%
+\gls@defglossaryentry{parser}%
+{%
+name={parser},%
+sort={parser},%
+type={main},%
+first={parser},%
+firstplural={parsers},%
+text={parser},%
+plural={parsers},%
+description={A service that parses source code into syntactical constructs},%
+descriptionplural={A service that parses source code into syntactical constructs},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{ide}{}%
+{%
+\gls@defglossaryentry{ide}%
+{%
+name={IDE},%
+sort={IDE},%
+type={main},%
+first={Integrated Development Environment\glsspace (IDE)},%
+firstplural={Integrated Development Environment\acrpluralsuffix \glsspace (IDE\acrpluralsuffix )},%
+text={IDE},%
+plural={IDE\acrpluralsuffix },%
+description={Integrated Development Environment},%
+descriptionplural={Integrated Development Environment\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Integrated Development Environment},%
+longplural={Integrated Development Environments},%
+short={IDE},%
+shortplural={IDEs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{solution}{}%
+{%
+\gls@defglossaryentry{solution}%
+{%
+name={solution},%
+sort={solution},%
+type={main},%
+first={solution},%
+firstplural={solutions},%
+text={solution},%
+plural={solutions},%
+description={A solution is a set of code files and other resources that are used to build an application},%
+descriptionplural={A solution is a set of code files and other resources that are used to build an application},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{compiletimeconstant}{}%
+{%
+\gls@defglossaryentry{compiletimeconstant}%
+{%
+name={compile-time constant},%
+sort={compile-time constant},%
+type={main},%
+first={compile-time constant},%
+firstplural={compile-time constants},%
+text={compile-time constant},%
+plural={compile-time constants},%
+description={A variable of which its value is guaranteed known when the compilation process starts},%
+descriptionplural={A variable of which its value is guaranteed known when the compilation process starts},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{syntaxtree}{}%
+{%
+\gls@defglossaryentry{syntaxtree}%
+{%
+name={syntax tree},%
+sort={syntax tree},%
+type={main},%
+first={syntax tree},%
+firstplural={syntax trees},%
+text={syntax tree},%
+plural={syntax trees},%
+description={A data structure which represents the hierarchy between syntactical constructs},%
+descriptionplural={A data structure which represents the hierarchy between syntactical constructs},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{metadata}{}%
+{%
+\gls@defglossaryentry{metadata}%
+{%
+name={metadata},%
+sort={metadata},%
+type={main},%
+first={metadata},%
+firstplural={metadatas},%
+text={metadata},%
+plural={metadatas},%
+description={Information about the data or action},%
+descriptionplural={Information about the data or action},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{invocation}{}%
+{%
+\gls@defglossaryentry{invocation}%
+{%
+name={invocation},%
+sort={invocation},%
+type={main},%
+first={invocation},%
+firstplural={invocations},%
+text={invocation},%
+plural={invocations},%
+description={Executing a code path by calling a function},%
+descriptionplural={Executing a code path by calling a function},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{uml}{}%
+{%
+\gls@defglossaryentry{uml}%
+{%
+name={UML},%
+sort={UML},%
+type={main},%
+first={Unified Modeling Language\glsspace (UML)},%
+firstplural={Unified Modeling Language\acrpluralsuffix \glsspace (UML\acrpluralsuffix )},%
+text={UML},%
+plural={UML\acrpluralsuffix },%
+description={Unified Modeling Language},%
+descriptionplural={Unified Modeling Language\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Unified Modeling Language},%
+longplural={Unified Modeling Languages},%
+short={UML},%
+shortplural={UMLs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{api}{}%
+{%
+\gls@defglossaryentry{api}%
+{%
+name={API},%
+sort={API},%
+type={main},%
+first={Application Programming Interface\glsspace (API)},%
+firstplural={Application Programming Interface\acrpluralsuffix \glsspace (API\acrpluralsuffix )},%
+text={API},%
+plural={API\acrpluralsuffix },%
+description={Application Programming Interface},%
+descriptionplural={Application Programming Interface\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Application Programming Interface},%
+longplural={Application Programming Interfaces},%
+short={API},%
+shortplural={APIs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{immutable}{}%
+{%
+\gls@defglossaryentry{immutable}%
+{%
+name={immutable},%
+sort={immutable},%
+type={main},%
+first={immutable},%
+firstplural={immutables},%
+text={immutable},%
+plural={immutables},%
+description={An object that, once constructed, can no longer be modified},%
+descriptionplural={An object that, once constructed, can no longer be modified},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{threadsafe}{}%
+{%
+\gls@defglossaryentry{threadsafe}%
+{%
+name={thread-safe},%
+sort={thread-safe},%
+type={main},%
+first={thread-safe},%
+firstplural={thread-safes},%
+text={thread-safe},%
+plural={thread-safes},%
+description={Safety from threads interfering with each other on a shared resource},%
+descriptionplural={Safety from threads interfering with each other on a shared resource},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{intellisense}{}%
+{%
+\gls@defglossaryentry{intellisense}%
+{%
+name={intellisense},%
+sort={intellisense},%
+type={main},%
+first={intellisense},%
+firstplural={intellisenses},%
+text={intellisense},%
+plural={intellisenses},%
+description={Context-aware hints as you type},%
+descriptionplural={Context-aware hints as you type},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{dos}{}%
+{%
+\gls@defglossaryentry{dos}%
+{%
+name={DoS},%
+sort={DoS},%
+type={main},%
+first={Denial of Service\glsspace (DoS)},%
+firstplural={Denial of Service\acrpluralsuffix \glsspace (DoS\acrpluralsuffix )},%
+text={DoS},%
+plural={DoS\acrpluralsuffix },%
+description={Denial of Service},%
+descriptionplural={Denial of Service\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Denial of Service},%
+longplural={Denial of Services},%
+short={DoS},%
+shortplural={DoSs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{emit}{}%
+{%
+\gls@defglossaryentry{emit}%
+{%
+name={emit},%
+sort={emit},%
+type={main},%
+first={emit},%
+firstplural={emits},%
+text={emit},%
+plural={emits},%
+description={Writing data to an output stream},%
+descriptionplural={Writing data to an output stream},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{memoryfootprint}{}%
+{%
+\gls@defglossaryentry{memoryfootprint}%
+{%
+name={memory-footprint},%
+sort={memory-footprint},%
+type={main},%
+first={memory-footprint},%
+firstplural={memory-footprints},%
+text={memory-footprint},%
+plural={memory-footprints},%
+description={The amount of memory software uses when running},%
+descriptionplural={The amount of memory software uses when running},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{ast}{}%
+{%
+\gls@defglossaryentry{ast}%
+{%
+name={AST},%
+sort={AST},%
+type={main},%
+first={Abstract Syntax Tree\glsspace (AST)},%
+firstplural={Abstract Syntax Tree\acrpluralsuffix \glsspace (AST\acrpluralsuffix )},%
+text={AST},%
+plural={AST\acrpluralsuffix },%
+description={Abstract Syntax Tree},%
+descriptionplural={Abstract Syntax Tree\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Abstract Syntax Tree},%
+longplural={Abstract Syntax Trees},%
+short={AST},%
+shortplural={ASTs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{fifo}{}%
+{%
+\gls@defglossaryentry{fifo}%
+{%
+name={FIFO},%
+sort={FIFO},%
+type={main},%
+first={First In, First Out\glsspace (FIFO)},%
+firstplural={First In, First Out\acrpluralsuffix \glsspace (FIFO\acrpluralsuffix )},%
+text={FIFO},%
+plural={FIFO\acrpluralsuffix },%
+description={First In, First Out},%
+descriptionplural={First In, First Out\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={First In, First Out},%
+longplural={First In, First Outs},%
+short={FIFO},%
+shortplural={FIFOs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{cachemiss}{}%
+{%
+\gls@defglossaryentry{cachemiss}%
+{%
+name={cache miss},%
+sort={cache miss},%
+type={main},%
+first={cache miss},%
+firstplural={cache misss},%
+text={cache miss},%
+plural={cache misss},%
+description={A lookup in the cache that yields no result},%
+descriptionplural={A lookup in the cache that yields no result},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{concatenation}{}%
+{%
+\gls@defglossaryentry{concatenation}%
+{%
+name={concatenation},%
+sort={concatenation},%
+type={main},%
+first={concatenation},%
+firstplural={concatenations},%
+text={concatenation},%
+plural={concatenations},%
+description={Combining two strings together},%
+descriptionplural={Combining two strings together},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{linq}{}%
+{%
+\gls@defglossaryentry{linq}%
+{%
+name={LINQ},%
+sort={LINQ},%
+type={main},%
+first={Language Integrated Query\glsspace (LINQ)},%
+firstplural={Language Integrated Query\acrpluralsuffix \glsspace (LINQ\acrpluralsuffix )},%
+text={LINQ},%
+plural={LINQ\acrpluralsuffix },%
+description={Language Integrated Query},%
+descriptionplural={Language Integrated Query\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Language Integrated Query},%
+longplural={Language Integrated Querys},%
+short={LINQ},%
+shortplural={LINQs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{malware}{}%
+{%
+\gls@defglossaryentry{malware}%
+{%
+name={malware},%
+sort={malware},%
+type={main},%
+first={malware},%
+firstplural={malwares},%
+text={malware},%
+plural={malwares},%
+description={Malicious software},%
+descriptionplural={Malicious software},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{npm}{}%
+{%
+\gls@defglossaryentry{npm}%
+{%
+name={npm},%
+sort={npm},%
+type={main},%
+first={Node Package Manager\glsspace (npm)},%
+firstplural={Node Package Manager\acrpluralsuffix \glsspace (npm\acrpluralsuffix )},%
+text={npm},%
+plural={npm\acrpluralsuffix },%
+description={Node Package Manager},%
+descriptionplural={Node Package Manager\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Node Package Manager},%
+longplural={Node Package Managers},%
+short={npm},%
+shortplural={npms},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{fork}{}%
+{%
+\gls@defglossaryentry{fork}%
+{%
+name={fork},%
+sort={fork},%
+type={main},%
+first={fork},%
+firstplural={forks},%
+text={fork},%
+plural={forks},%
+description={Creating a copy of a repository},%
+descriptionplural={Creating a copy of a repository},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{pdb}{}%
+{%
+\gls@defglossaryentry{pdb}%
+{%
+name={PDB},%
+sort={PDB},%
+type={main},%
+first={Program Database\glsspace (PDB)},%
+firstplural={Program Database\acrpluralsuffix \glsspace (PDB\acrpluralsuffix )},%
+text={PDB},%
+plural={PDB\acrpluralsuffix },%
+description={Program Database},%
+descriptionplural={Program Database\acrpluralsuffix },%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Program Database},%
+longplural={Program Databases},%
+short={PDB},%
+shortplural={PDBs},%
 counter={page},%
 parent={},%
 %

@@ -1,0 +1,157 @@
+using System;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using
+    Microsoft.CodeAnalysis.CSharp.Syntax
+    ;
+
+namespace ConsoleApplication1
+{
+    public class MySyntaxWalker :
+        CSharpSyntaxWalker
+    {
+        private readonly int
+            _spacesPerLevel = 4;
+
+        private int _indentLevel;
+
+        internal static void Execute()
+        {
+            const string source = @"
+public class MyOuterClass
+{
+    public void FirstMethod(int x, int y) { }
+    private void SecondMethod(string s) { }
+
+    public int Property1 { get; set }
+    internal StringBuilder Property2 { get; set }
+
+    private class MyInnerClass
+    {
+        protected int InnerMethod(Func<int, int> f) { return 42; }
+    }
+}
+";
+            var tree =
+                CSharpSyntaxTree
+                    .ParseText(source);
+            new MySyntaxWalker().Visit(
+                tree.GetRoot());
+        }
+
+        private string GetAccessLevel(
+            SyntaxTokenList modifiers)
+        {
+            var levels = new[]
+            {
+                SyntaxKind.PublicKeyword,
+                SyntaxKind
+                    .ProtectedKeyword,
+                SyntaxKind
+                    .InternalKeyword,
+                SyntaxKind
+                    .PrivateKeyword
+            };
+            var foundModifier =
+                modifiers.FirstOrDefault
+                    (modifier =>
+                        levels.Any(
+                            level =>
+                                modifier
+                                    .Kind
+                                    () ==
+                                level));
+            return
+                foundModifier.Kind() ==
+                SyntaxKind.PublicKeyword
+                    ? "+"
+                    : foundModifier.Kind
+                        () ==
+                      SyntaxKind
+                          .InternalKeyword ||
+                      foundModifier.Kind
+                          () ==
+                      SyntaxKind
+                          .ProtectedKeyword
+                        ? "#"
+                        : "-";
+        }
+
+        private void Write(string text,
+                           string
+                               accessLevel,
+                           Action
+                               visitBase)
+        {
+            _indentLevel++;
+            var indentation =
+                new string(' ',
+                    _indentLevel*
+                    _spacesPerLevel);
+            Console.WriteLine(
+                $"{indentation}{accessLevel} {text}");
+            visitBase();
+            _indentLevel--;
+        }
+
+        public override void
+            VisitClassDeclaration(
+            ClassDeclarationSyntax node)
+        {
+            Write(
+                node.Identifier
+                    .ValueText,
+                GetAccessLevel(
+                    node.Modifiers),
+                () =>
+                    base
+                        .VisitClassDeclaration
+                        (node));
+        }
+
+        public override void
+            VisitMethodDeclaration(
+            MethodDeclarationSyntax node)
+        {
+            var identifier =
+                node.Identifier
+                    .ValueText;
+            var parameters =
+                string.Join(", ",
+                    node.ParameterList
+                        .Parameters
+                        .Select(
+                            x => x.Type));
+            var returnType =
+                node.ReturnType;
+
+            Write(
+                $"{identifier}({parameters}) : {returnType}",
+                GetAccessLevel(
+                    node.Modifiers),
+                () =>
+                    base
+                        .VisitMethodDeclaration
+                        (node));
+        }
+
+        public override void
+            VisitPropertyDeclaration(
+            PropertyDeclarationSyntax
+                node)
+        {
+            var identifier =
+                node.Identifier
+                    .ValueText;
+            Write(
+                $"prop: {identifier} : {node.Type}",
+                GetAccessLevel(
+                    node.Modifiers),
+                () =>
+                    base
+                        .VisitPropertyDeclaration
+                        (node));
+        }
+    }
+}

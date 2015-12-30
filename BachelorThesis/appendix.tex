@@ -1,0 +1,40 @@
+% ****************
+% *   APPENDIX   *
+% ****************
+
+\documentclass[pdftex,a4paper,12pt,twoside]{report}
+
+\input{preamble/extra.tex}
+\input{preamble/layout.tex}
+\input{preamble/properties.tex}
+
+\begin{document}
+
+\tableofcontents
+
+\appendix
+
+\chapter{Source code}
+\label{ch:sourcecode}
+
+
+\section{The string.Format analyzer}
+\lstinputlisting[style=csharp]{source/analyzer.txt}
+
+\section{The analyzer its unit tests}
+\lstinputlisting[style=csharp]{source/unittests.txt}
+
+\section{PlaceholderHelpers.cs}
+\lstinputlisting[style=csharp]{source/placeholderhelpers.txt}
+
+\section{SyntaxWalker}
+\lstinputlisting[style=csharp]{source/syntaxwalker.txt}
+
+\section{SyntaxRewriter}
+\lstinputlisting[style=csharp]{source/syntaxrewriter.txt}
+
+
+
+
+
+\end{document}
