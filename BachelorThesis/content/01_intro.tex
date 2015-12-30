@@ -4,14 +4,15 @@
 \section{What is Roslyn?}
 \label{sec:intro-what?}
 
-what is it -- origin of name -- etc
+Roslyn is a city in Washington, a former coal mining town and the filming location for multiple movies. It is also said that it was in this place, drinking one of Roslyn's beers, that a project manager on the Managed Languages team over at Microsoft came up with the name of their new \gls{compiler}: Roslyn.\parencite{Wischik2014} A compiler is a program that translates code from one language to another. In this case, it translates C\# code to \gls{msil} -- Microsoft Intermediate Language.
+
 
 \section{What can Roslyn do?}
 \label{sec:intro-what-can}
 
-There are three major aspects that can be analyzed: the syntax, the semantic model and the data flow. 
-The syntax, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note, however, that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
-The next level facilitates this aspect: it interprets the semantic model. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type \texttt{ClassDeclarationSyntax})
+There are three major aspects to source code that can be analyzed: the syntax, the semantic model and the data flow. 
+The \gls{syntax}, which is really just a collection of tokens that make up our source code, is the very basic level: no interpretation is done, we just make sure that the code that is written is valid syntactically. These validations are performed by confirming that the source code adheres to the rules specified in the C\# Language Specification\footnote{https://msdn.microsoft.com/en-us/library/ms228593.aspx}. Note, however, that there is no analyzing done of the actual meaning of these symbols thus far – we only determined that the textual representation is correct.
+The next level facilitates this aspect: it interprets the \gls{semanticmodel}. This means that so-called ‘symbols’ are created for each syntactical construct and represent a meaning. For example the following code will be interpreted as a class declaration (through the type \texttt{ClassDeclarationSyntax}).
 
 \lstset{style=csharp, caption={Interpretation of a class declaration}}
 \begin{lstlisting}
@@ -19,7 +20,7 @@ public class MyClass { }
 \end{lstlisting}
 
 	
-while in this code, the \texttt{MyClass} will be interpreted as an \texttt{IdentifierNameSyntax}:
+While in this code, the \texttt{MyClass} will be interpreted as an \texttt{IdentifierNameSyntax}:
 
    
 \lstset{style=csharp, caption={Interpretation of an object instantiations}}
@@ -28,7 +29,7 @@ var obj = new MyClass();
 \end{lstlisting}  
 	
 This shows us that the semantic model knows the meaning of each syntactic construct regarding its context. This allows for more extensive analysis since we can now also analyze the relationship between specific symbols. 
-Last but not least: the third aspect of source code that we can analyze is its data flow in a specific region. The ‘region’ here refers to either a method body or a field initializer. This tells us whether or a variable is read from/written to inside or outside the specified region, what the local variables in this region are, etc. This is a step above “simple” semantic analysis: rather than interpreting the meaning of a symbol in the code, we can now analyze how certain symbols are interacted with without actually executing the code itself.
+Last but not least: the third aspect of source code that we can analyze is its \gls{dataflow} in a specific region. The ‘region’ here refers to either a method body or a field initializer. This tells us whether or a variable is read from/written to inside or outside the specified region, what the local variables in this region are, etc. This is a step above “simple” semantic analysis: rather than interpreting the meaning of a symbol in the code, we can now analyze how certain symbols are interacted with without actually executing the code itself.
 For example consider the following method:
 
 \lstset{style=csharp, caption={A method with definite assignments}}
@@ -41,7 +42,7 @@ For example consider the following method:
 
 \end{lstlisting}
 	
-Analyzing this method’s data flow and looking at the \texttt{DataFlowAnalysis.AlwaysAssigned} property, would tell us that only 1 local here would be always assigned. However if we now alter the above code to this:
+Analyzing this method’s \gls{dataflow} and looking at the \texttt{DataFlowAnalysis.AlwaysAssigned} property, would tell us that only 1 local here would be always assigned. However if we now alter the above code to this:
 
 \lstset{style=csharp, caption={A method with conditional assignments}}
 \begin{lstlisting}
@@ -54,7 +55,7 @@ Analyzing this method’s data flow and looking at the \texttt{DataFlowAnalysis.
    }
 \end{lstlisting}
 	
-we now receive “2” as a result. This is an extremely powerful (albeit currently fairly limited) feature that allows us to actually interpret a code snippet’s data flow without executing it.
+We now receive “2” as a result. This is an extremely powerful (albeit currently fairly limited) feature that allows us to actually interpret a code snippet’s \gls{dataflow} without executing it.
 
 
 \section{Why was Roslyn built?}
@@ -62,19 +63,19 @@ we now receive “2” as a result. This is an extremely powerful (albeit curren
 
 Now that we know what Roslyn does, it is important to realize what gap is being closed. After all, something has to be special about Roslyn if it is to receive such widespread attention.
 
-Roslyn introduced two very big changes to the community: the C\# compiler’s language changed and it has now become open-source. Prior to Roslyn, the C\# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was out of your reach. By open-sourcing Roslyn and placing it on CodePlex\footnote{https://roslyn.codeplex.com/} and afterwards Github\footnote{https://github.com/dotnet/roslyn/}, this box was suddenly opened and everybody could look at the internals of how a high-end compiler is written.
+Roslyn introduced two very big changes to the community: the C\# compiler’s language changed and it has now become \gls{opensource}. Prior to Roslyn, the C\# compiler was like a black box: everybody had access to the language specification so you could know what the rules of language were but the actual process of verifying your code against these rules was out of your reach. By open-sourcing Roslyn and placing it on CodePlex\footnote{https://roslyn.codeplex.com/} and afterwards Github\footnote{https://github.com/dotnet/roslyn/}, this box was suddenly opened and everybody could look at the internals of how a high-end compiler is written.
 
-This brings us to the other big change: because Roslyn is written in C\# rather than C++, the C\# compiler is now able to bootstrap itself. This means that Roslyn can compile itself in C\# to compile the next versions of the Roslyn compiler! The process is simple: Roslyn is compiled using the old C++ compiler after which that newly created compiler re-compiles the Roslyn code base and suddenly you have a C\# compiler that is written in C\#. 
+This brings us to the other big change: because Roslyn is written in C\# rather than C++, the C\# compiler is now able to \gls{bootstrap} itself. This means that Roslyn can compile itself in C\# to compile the next versions of the Roslyn compiler! The process is simple: Roslyn is compiled using the old C++ compiler after which that newly created compiler re-compiles the Roslyn code base and suddenly you have a C\# compiler that is written in C\#. 
 An added benefit of rewriting the compiler is the fact you can “discard” the older one.
 
-With the change from C++ to C\# the compiler switched from an unmanaged language to a managed one. In essence this means that in a managed language like C\#, a special service called the "Garbage Collector" (GC) will take care of allocating and freeing memory. Without going too deep into the GC's working and purpose, the Roslyn team has found that this switch allowed them to focus more on improving the algorithms and less on taking care of memory issues. This resulted in a keystroke response time of under 80ms with the 98\textsuperscript{th} percentile even lowering as far as 40ms -- a "significant improvement over the C++ version".\parencite{Wischik2014}
+With the change from C++ to C\# the \gls{compiler} switched from an unmanaged language to a managed one. In essence this means that in a \gls{managedlanguage} like C\#, a special service called the "\gls{gc}" (GC) will take care of allocating and freeing memory. Without going too deep into the GC's working and purpose, the Roslyn team has found that this switch allowed them to focus more on improving the algorithms and less on taking care of memory issues. This resulted in a keystroke response time of under 80ms with the 98\textsuperscript{th} percentile even lowering as far as 40ms -- a "significant improvement over the C++ version".\parencite{Wischik2014}
 
-It should be noted here that Roslyn is also VB.NET's new compiler and as such, VB.NET-specific parts are written in VB.NET. You will also notice that every unit test that applies to both C\# and VB.NET is duplicated in both languages. In this paper, however, we will focus on the C\# aspects.
+It should be noted here that Roslyn is also VB.NET's new compiler and as such, VB.NET-specific parts are written in VB.NET. You will also notice that every \gls{unittest} that applies to both C\# and VB.NET is duplicated in both languages. In this paper, however, we will focus on the C\# aspects.
 
 \section{Positivity of an open compiler}
 \label{sec:intro-pos-comp}
 
-Opening the compiler to the public brought a lot of good things, not in the least external contributions! Only 6 days after the Roslyn source was released, the first PR (Pull Request) was already integrated in the system!
+Opening the \gls{compiler} to the public brought a lot of good things, not in the least external contributions! Only 6 days after the Roslyn source was released, the first PR (Pull Request) was already integrated in the system!
 
 \begin{figure}[h]
 \centering
@@ -89,11 +90,11 @@ There are many more benefits to open-sourcing:
 \begin{itemize}
 	\item The amount of scrutiny the code goes through is greater now that the entire developer community has access to it.
 	
-	\item Developers themselves can now more easily learn how compilers work in a language they’re familiar with. Writing compilers has become more and more a “far-from-my-bed-show” with the rise of high-level languages – this might (re-)introduce some interest into such low-level concepts.
+	\item Developers themselves can now more easily learn how \glspl{compiler} work in a language they’re familiar with. Writing compilers has become more and more a “far-from-my-bed-show” with the rise of high-level languages – this might (re-)introduce some interest into such low-level concepts.
 	
-	\item It also facilitates advanced users by allowing them to inspect the bare bones of the compiler when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this stackoverflow question titled “Why does Roslyn crash when trying to rewrite this lambda?”\footnote{http://stackoverflow.com/a/34085687/1864167} where a user noticed that identical code compiles differently on the new compiler. Merely hours later, another user had identified the issue, discovered the offending commit in the Roslyn repository and submitted a PR with a fix.
+	\item It also facilitates advanced users by allowing them to inspect the bare bones of the \gls{compiler} when something unexpected happens. Compilers are not bug free\footnote{http://stackoverflow.com/a/28820861/1864167}\footnote{http://stackoverflow.com/q/33694904/1864167} and implementations change over time\footnote{http://stackoverflow.com/a/30991931/1864167} which may lead to small but distinct differences in behaviour. An example that comes to mind is laid out in this stackoverflow question titled “Why does Roslyn crash when trying to rewrite this lambda?”\footnote{http://stackoverflow.com/a/34085687/1864167} where a user noticed that identical code compiles differently on the new compiler. Merely hours later, another user had identified the issue, discovered the offending commit in the Roslyn repository and submitted a \gls{pr} with a fix.
 	
-	\item Last but not least it simply provides a very robust and efficient parser that external parties now won’t have to develop themselves. This doesn’t necessarily mean that those tools should switch to the Roslyn platform but they might incorporate some ideas of it in their own parser (as is the case with ReSharper, a popular code-refactoring tool).\parencite{Gorohovsky2014}
+	\item Last but not least it simply provides a very robust and efficient parser that external parties now won’t have to develop themselves. This doesn’t necessarily mean that those tools should switch to the Roslyn platform but they might incorporate some ideas of it in their own \gls{parser} (as is the case with ReSharper, a popular code-refactoring tool).\parencite{Gorohovsky2014}
 
 \end{itemize}
 
@@ -101,9 +102,9 @@ There are many more benefits to open-sourcing:
 \section{Positivity of compiler APIs}
 \label{sec:intro-pos-api}
 
-Separately, providing APIs to your compiler brings benefits with it as well. Because of the broad support of APIs for all kinds of aspects of a compilation’s lifetime, a very convenient service is created where external parties can easily hook into and create their own diagnostics using the information that comes straight from the compiler. This encourages new tools aimed at the platform since the hassle of writing your own parser is removed – developers can go straight to implementing business logic. 
+Separately, providing APIs to your compiler brings benefits with it as well. Because of the broad support of APIs for all kinds of aspects of a compilation’s lifetime, a very convenient service is created where external parties can easily hook into and create their own diagnostics using the information that comes straight from the \gls{compiler}. This encourages new tools aimed at the platform since the hassle of writing your own parser is removed – developers can go straight to implementing business logic. 
 
-On top of that, the “native” support means that there is a seamless integration with Visual Studio, Microsoft’s own IDE\footnote{IDE: Integrated Development Environment, the editor in which you modify source files}. This integration allows you to use the results of your diagnostics to be displayed and used directly inside of Visual Studio rather than needing to build a third-party tool or a plugin.
+On top of that, the “native” support means that there is a seamless integration with Visual Studio, Microsoft’s own \gls{ide}\footnote{IDE: Integrated Development Environment, the editor in which you modify source files}. This integration allows you to use the results of your diagnostics to be displayed and used directly inside of Visual Studio rather than needing to build a third-party tool or a plugin.
 
 \noindent This is the essence of why Roslyn is regarded as “Compiler as a Service”.
 

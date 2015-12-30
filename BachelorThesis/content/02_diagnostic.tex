@@ -1,7 +1,7 @@
 \chapter{Implementing a Diagnostic}
 \label{ch:diagnostic}
 
-As a way to demonstrate the usefulness of Roslyn, a specific usecase will be investigated. You might be familiar with \texttt{string.Format()} but if not: it's a way of creating a formatted string by using placeholders and corresponding arguments to interpolate certain portions of it. 
+As a way to demonstrate the usefulness of Roslyn, a specific usecase will be investigated. You might be familiar with \texttt{string.Format()} but if not: it's a way of creating a formatted string by using placeholders and corresponding arguments to interpolate certain portions of it.
 
 For example the code in listing \ref{lst:string-format-example} will display "Hello John!". As you can tell, the placeholder (which is an integer delimited by angle brackets) will correspond to the argument you pass in afterwards.
 
@@ -17,11 +17,11 @@ One scenario where this can go wrong if you have a placeholder inside your forma
 string.Format("Hello {0}! My name is {1}", "John");
 \end{lstlisting}
 
-In this section we will create an analyzer that scans our solution for occurrences where \texttt{string.Format} is used with more placeholders than it has arguments. 
+In this section we will create an analyzer that scans our \gls{solution} for occurrences where \texttt{string.Format} is used with more placeholders than it has arguments. 
 There are some restrictions that apply: certain scenarios are not supported because it's impossible or not feasible to calculate it at compile-time. Additionally, some edge cases have been omitted but will be integrated at a later stage. The characteristics:
 
 \begin{itemize}
-\item The format must be a constant. This can be in the form of a string literal, a constant variable, a compile-time constant concatenation, etc
+\item The format must be a constant. This can be in the form of a string literal, a constant variable, a \gls{compiletimeconstant} concatenation, etc
 \item Interpolated strings that specify the format are ignored for now
 \item If the arguments are passed in using an array and the \texttt{object[]} overload is used, only inline-initialized arrays are considered
 \item The analyzer does not work for just \texttt{string.Format} but for every method that has a 'format' parameter and an \texttt{object} or \texttt{object[]} parameter. This allows us to also support \texttt{Console.WriteLine} for example.
@@ -34,7 +34,7 @@ The full code can be found in !!REFERENCE ATTACHMENT!!.
 \section{Getting started}
 \label{sec:diagnostic-getting-started}
 
-There are a few requirements in order to get started with writing your own diagnostic. Once you have these installed you can continue by creating a new solution using the "Diagnostic with Code Fix (NuGet + VSIX)" template which will get you started with a class library for your analyzers, a testing project to write unit tests and a Vsix project to install it as an extension.
+There are a few requirements in order to get started with writing your own diagnostic. Once you have these installed you can continue by creating a new \gls{solution} using the "Diagnostic with Code Fix (NuGet + VSIX)" template which will get you started with a class library for your analyzers, a testing project to write \glspl{unittest} and a Vsix project to install it as an extension.
 
 \begin{itemize}
 \item Visual Studio 2015\footnote{\url{https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx}}
@@ -44,19 +44,19 @@ There are a few requirements in order to get started with writing your own diagn
 \section{Implementing the diagnostic}
 \label{sec:diagnostic-implementation}
 
-There are a few ways to implement this: you could keep it easy and find all formats, normalize them by removing format specifiers for each placeholder and replacing the arguments with example strings and then calling \texttt{string.Format} inside your analyzer and see if it throws any exception. This would certainly be a valid approach but hardly a good demonstration of what Roslyn can do. Instead, we will analyze the syntax tree, use the semantic model to get info about its nodes and parse the format ourselves.
+There are a few ways to implement this: you could keep it easy and find all formats, normalize them by removing format specifiers for each placeholder and replacing the arguments with example strings and then calling \texttt{string.Format} inside your analyzer and see if it throws any exception. This would certainly be a valid approach but hardly a good demonstration of what Roslyn can do. Instead, we will analyze the \gls{syntaxtree}, use the \gls{semanticmodel} to get info about its nodes and parse the format ourselves.
 
 The general layout of an analyzer is straightforward and consists of the following aspects:
 
 \begin{itemize}
-\item Metadata such as supported languages, severity, category, message and title
+\item \Gls{metadata} such as supported languages, severity, category, message and title
 \item Registration of what should trigger the analyzer
 \item Implementation of the actual analyzer
 \end{itemize}
 
 The two most important ones (that the user will get into contact with) are the severity and the message. The severity determines whether it will be a warning, an error, info or something that only shows up when you look at the context-actions for a specific line of code ('hidden'). The message is the message the user sees in his 'Error List' window and is essential to tell the user what's wrong.
 
-This metadata is exposed to the underlying architecture by means of the \texttt{SupportedDiagnostics} property as we can see in listing \ref{lst:diagnostic-metadata}. Specifying which languages are supported has to be done separately through an annotation (listing \ref{lst:diagnostic-supported-lang}).
+This \gls{metadata} is exposed to the underlying architecture by means of the \texttt{SupportedDiagnostics} property as we can see in listing \ref{lst:diagnostic-metadata}. Specifying which languages are supported has to be done separately through an annotation (listing \ref{lst:diagnostic-supported-lang}).
 
 \lstset{style=csharp, caption={Configuring metadata for your analyzer}}
 \begin{lstlisting}[label={lst:diagnostic-metadata}]
@@ -79,7 +79,7 @@ public override ImmutableArray<DiagnosticDescriptor>
 public class MyAnalyzer : DiagnosticAnalyzer
 \end{lstlisting}
 
-Once this is taken care of we have to decide what should trigger our analyzer. Depending on what you, choose your analyzer can be fired during the parsing stage or something at a higher level. We will fire ours each time it comes across an invocation but there are many ways to approach it: you could also register your analyzer when it comes across a string literal or an argument list. Each of these three options require you to verify that you're dealing with a \texttt{string.Format} call so it's up to you to decide what path to take. Keep in mind though that firing an analyzer is not free of charge so you should strive for a configuration that has as little false-positive invocations as possible.
+Once this is taken care of we have to decide what should trigger our analyzer. Depending on what you, choose your analyzer can be fired during the parsing stage or something at a higher level. We will fire ours each time it comes across an \gls{invocation} but there are many ways to approach it: you could also register your analyzer when it comes across a string literal or an argument list. Each of these three options require you to verify that you're dealing with a \texttt{string.Format} call so it's up to you to decide what path to take. Keep in mind though that firing an analyzer is not free of charge so you should strive for a configuration that has as little false-positive \glspl{invocation} as possible.
 
 In order to setup this configuration you have to override the \texttt{Initialize} method, register the kind of action you're interested in and pass along the actual analyzer implementation followed by a \texttt{params} list of accepted firing conditions (listing \ref{lst:diagnostic-register-action}).
 
@@ -259,28 +259,63 @@ if (highestPlaceholder + 1 > amountOfFormatArguments)
 }
 \end{lstlisting}
 
-\subsection{Difficulties when implementing an analyzer}
+\section{Difficulties when implementing an analyzer}
 \label{sec:diagnostic-difficulties}
 
 Writing a diagnostic introduces a different kind of problem domain than what you typically encounter: rather than modeling your software according to a physical real-world idea, you have absolutely no idea in what kind of environment your code will be used. All you know is that it will contain code that tends to follow the C\# language specification (C\#LS) -- "tends" because more often than not, source code is not in a C\#LS-compliant state (which in itself poses an extra complication). 
+
 This means we have a double-edged sword: on one hand we have a very detailed manual that tells us the exact rules of what is possible. On the other hand this is a document of 527 pages (C\#LS v5.0) with often very niche scenarios detailed in it. It is up to the developer to decide which scenarios his analyzer supports but that implies a very strong knowledge of how the language works in itself. For this reason it should be no surprise that writing diagnostics that are truly robust is a really hard task to perform. This introduces a secondary problem: diagnostics should have a very, very low false-positive rate. The more false-positives it produces, the more it will annoy the user and subsequently the more likely it is people will turn off the diagnostic altogether.
 
-Another important aspect to keep in mind is that the code is often in an invalid state. When you think about the expression \texttt{myVar.MyMethod()} you see the end-result which an sich is compliant with the language specification. However before that state was reached you also had \texttt{m}, \texttt{my}, \texttt{myV} and so on. This means that your analyzers have to handle situations with invalid code gracefully. Roslyn is a very smart compiler and is able to parse a syntax tree even when there are errors -- often this means you have half-constructed nodes in the sense that some of its properties are \texttt{null}. For this reason you will often find a lot of \texttt{null} checks in analyzers: using a "soft" cast with \texttt{as} allows us to hesitantly check if some node has been constructed already. Likewise we should \texttt{null}-check every nullable property we access because there is no guarantee that, for example, \texttt{InvocationExpression.ArgumentList} has a value since the user might yet have typed the opening braces for those arguments.
+Another important aspect to keep in mind is that the code is often in an invalid state. When you think about the expression \texttt{myVar.MyMethod()} you see the end-result which an sich is compliant with the language specification. However before that state was reached you also had \texttt{m}, \texttt{my}, \texttt{myV} and so on. This means that your analyzers have to handle situations with invalid code gracefully. Roslyn is a very smart compiler and is able to parse a syntax tree even when there are errors -- often this means you have half-constructed nodes in the sense that some of its properties are \texttt{null}. For this reason you will often find a lot of \texttt{null} checks in analyzers: using a "soft" cast with \texttt{as} allows us to hesitantly check if some node has been constructed already. Likewise we should \texttt{null}-check every nullable property we access because there is no guarantee that, for example, \texttt{InvocationExpression.ArgumentList} has a value since the user might not yet have typed the opening braces for those arguments.
 
-\subsection{Unit testing an analyzer}
-\label{sec:diagnostic-unit-testing}
+\section{Testing an analyzer}
+\label{sec:diagnostic-testing}
 
-Luckily you have useful tools at your disposal in order to increase your confidence in the analyzer's implementation. We've already mentioned before that Roslyn is not just a compiler: it's an entire service that comes with the compiler. One of those services is the ability to create in-memory solutions (technically: 'workspaces') complete with projects, documents and, yes, syntax trees. In fact, the API is so useful here that the essence consists of the following two statements:
+Luckily you have useful tools at your disposal in order to increase your confidence in the analyzer's implementation. We've already mentioned before that Roslyn is not just a compiler: it's an entire service package that comes with the compiler. One of those services is the ability to create in-memory solutions (technically: 'workspaces') complete with projects, documents and, yes, syntax trees. In fact, the API is so helpful here that the essence consists of the following two statements:
 
 \lstset{style=csharp, caption={Analyzing an in-memory project}}
 \begin{lstlisting}[label={sec:diagnostics-unit-tests-analysis}]
-var compilation = project.GetCompilationAsync().Result;
-var diagnostics = compilation.WithAnalyzers(ImmutableArray.Create(analyzer))
-                             .GetAnalyzerDiagnosticsAsync()
-                             .Result;
+var comp = project.GetCompilationAsync().Result;
+var diagnostics = 
+ comp.WithAnalyzers(ImmutableArray.Create(analyzer))
+     .GetAnalyzerDiagnosticsAsync()
+     .Result;
 \end{lstlisting}
 
-After constructing a basic setup and passing in your source code under test (which is just a \texttt{string}) to the in-memory project. Afterwards you add the analyzer(s) you wanted to unleash on your code snippet, look at possible diagnostic results and you're done: you now know if your analyzer had any result. Lucky for us we don't have to implement any of this: the solution template that ships with Visual Studio 2015 includes a test project containing helper classes that provide these things for us.
+After constructing a basic setup you pass your source code under test (which is just a \texttt{string}) to the in-memory project. Afterwards you add the analyzer(s) you wanted to unleash on your code snippet, look at possible diagnostic results and you're done: you now know if your analyzer had any result. Lucky for us we don't have to implement any of this: the solution template that ships with Visual Studio 2015 includes a test project containing helper classes that provide these things for us. An example of such a unit test can be found in listing \ref{sec:diagnostics-unit-tests-example}.
+
+\lstset{style=csharp, caption={Unit test verifying our analyzer works with Console.WriteLine and object[] arguments}}
+\begin{lstlisting}[label={sec:diagnostics-unit-tests-example}]
+[TestMethod]
+public void MyAnalyzerTest()
+{
+	var original = @"
+using System;
+
+namespace ConsoleApplication1
+{
+    class MyClass
+    {   
+        void Method(string input)
+        {
+            Console.WriteLine(""{0}{1}{2}"", 
+							new object[] { ""arg"", ""arg2"" });
+        }
+    }
+}";
+	VerifyDiagnostic(
+		original, 
+		MyAnalyzer.Rule.MessageFormat.ToString());
+}
+\end{lstlisting}
+
+Perhaps the most useful way to find out what scenarios you're lacking is by executing your analyzer on a relatively large number of open-source solutions. In the end, the community as a whole will probably encounter more distinct usages than you on your own. Finding open-source repositories is easily done on github or any other repository service so there is an abundance of scenarios to work with. This also serves multiple purposes:
+
+\begin{itemize}
+\item The open-source repositories help you reinforce your confidence in a working analyzer if it doesn't crash on any of them
+\item Using external repositories greatly expands the number of scenarios your analyzer has been exposed to thus increasing the chance of finding a scenario that you haven't accounted for
+\item Through testing your analyzer you will also find mistakes in open-source repositories so it provides a way to contribute pro-actively to the community
+\end{itemize}
 
 
 

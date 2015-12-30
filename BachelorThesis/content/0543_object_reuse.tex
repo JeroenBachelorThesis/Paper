@@ -208,19 +208,19 @@ class MyClass
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.80]{performance-node-reuse-scenario1-2}
+\includegraphics[scale=0.85]{performance-node-reuse-scenario1-2}
 \caption{Memory impact of the first parsing session with identical trees}
 \label{img:performance-node-reuse-scenario1-2}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=0.80]{performance-node-reuse-scenario1-3}
+\includegraphics[scale=0.95]{performance-node-reuse-scenario1-3}
 \caption{Memory impact of the second parsing session with identical trees}
 \label{img:performance-node-reuse-scenario1-3}
 \end{figure}
 
-\textbf{Conclusion:} The first parsing session creates a lot of different objects but the next session only creates a relative tiny amount of new objects. An interesting aspect to note here is the kind of objects we see created in that first run (see figure \ref{img:performance-node-reuse-scenario1-2}): every token is cached when that first parsing session starts which causes a lot of initial allocations. 
+\textbf{Conclusion:} The first parsing session creates a lot of different objects while the next session only creates a relative tiny amount of new objects. An interesting aspect to note here is the kind of objects we see created in that first run (see figure \ref{img:performance-node-reuse-scenario1-2}): every token is cached when that first parsing session starts which causes a lot of initial allocations. 
 When we look further down the list of allocated objects we also see caches, the parser, specific object pools, factories and a lot more. However when we now look at the second parsing session and see how it affects the heap we see none of this: there are a few new nodes representing the broad lines of the tree but no new tokens, identifiers, parsers, caches, etc have been allocated.
 
 
@@ -313,8 +313,9 @@ class MyClass
     private static void Main(string[] args)
 	{
 		var obj1 = CSharpSyntaxTree.ParseText(tree1);
-		var objects = obj1.GetRoot().DescendantNodesAndSelf()
-															  .ToArray();
+		var objects = obj1.GetRoot()
+										  .DescendantNodesAndSelf()
+											.ToArray();
 	}
 }
 \end{lstlisting}

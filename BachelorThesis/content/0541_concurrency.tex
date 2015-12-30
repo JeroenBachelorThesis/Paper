@@ -55,7 +55,7 @@ When we bind \texttt{SubType} we have to bind \texttt{BaseType} as well because,
 \noindent We can say there is "implicit partial ordering".\parencite{Sadov2014}
 
 \subsubsection{Method body compilation }
-\label{sec:concur-symbol-binding}
+\label{sec:concur-method-body-compilation}
 
 Method bodies are bound and emitted on a type-by-type basis and in lexicographical order (based on the alphabet). This order is important: when compiling identical code multiple types it should emit the same result every time. Sometimes compiling a method creates an additional structure such as a state machine (as is the case with async/await and iterator blocks). This idea of a 'deterministic build' is looked at more closely in section \ref{sec:deterministic-builds}. 
 

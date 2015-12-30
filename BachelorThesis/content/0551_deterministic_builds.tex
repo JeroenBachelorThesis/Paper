@@ -33,7 +33,7 @@ Looking at the exact fix in PR \#948\footnote{\url{https://github.com/dotnet/ros
 The order of the values in the \texttt{Dictionary<TKey, TValue>.ValueCollection} is unspecified, but it is the same order as the associated keys in the \texttt{Dictionary<TKey, TValue>.KeyCollection} returned by the \texttt{Keys} property.\footnote{\url{https://msdn.microsoft.com/en-us/library/ekcfxy3x.aspx}}
 \end{displayquote}
 
-\noindent Indeed, the result was to switch from an undeterministic iteration (listing \ref{lst:undeterministic-values}) to a deterministic one by ordering the collection first (listing \ref{lst:deterministic-values}).
+\noindent Indeed, the solution was to switch from an undeterministic iteration (listing \ref{lst:undeterministic-values}) to a deterministic one by ordering the collection first (listing \ref{lst:deterministic-values}).
 
 \lstset{style=csharp, caption={Undeterministic iteration of values}}
 \begin{lstlisting}[label={lst:undeterministic-values}]

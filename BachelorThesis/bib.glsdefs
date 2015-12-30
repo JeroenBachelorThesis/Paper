@@ -1,0 +1,30 @@
+\ifglsentryexists{ManagedLanguage}{}%
+{%
+\gls@defglossaryentry{ManagedLanguage}%
+{%
+name={managed language},%
+sort={managed language},%
+type={main},%
+first={managed language},%
+firstplural={managed languages},%
+text={managed language},%
+plural={managed languages},%
+description={a language which offsets memory management from the user to a Garbage Collector},%
+descriptionplural={a language which offsets memory management from the user to a Garbage Collector},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={},%
+longplural={},%
+short={},%
+shortplural={},%
+counter={page},%
+parent={},%
+%
+}%
+}%
