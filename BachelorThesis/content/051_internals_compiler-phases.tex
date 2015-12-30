@@ -6,19 +6,21 @@ A \gls{compiler} is a complicated application and consists of many different ser
 \subsection{Parsing phase}
 \label{sec:parsing-phase}
 
-This is the first phase and receives the source code. Here, the source is tokenized into syntactical constructs according to the C\# Language Specification. This process is performed by two important classes: \texttt{Lexer.cs} and \texttt{LanguageParser.cs}. Both services their function overlaps largely but the lexer works at a lower level than the \gls{parser}: while the lexer can give meaning to certain symbols (not to be confused with the symbols in section \ref{sec:declaration-phase}) such as operators, the parser is able to combine multiple tokens and construct larger syntactical constructs such as expressions.\parencite{Studencki2010} 
+This is the first phase and receives the source code. Here, the source is tokenized into syntactical constructs according to the C\# Language Specification. This process is performed by two important classes: \texttt{Lexer.cs} and \texttt{LanguageParser.cs}. Both services their function overlaps largely but the lexer works at a lower level than the \gls{parser}: while the lexer can give meaning to certain symbols (not to be confused with the symbols in section \ref{sec:declaration-phase}) such as operators, the parser is able to combine multiple tokens and construct larger syntactical constructs such as expressions.\parencite{Studencki2010}
 
+\begin{minipage}{\linewidth}
 The eventual result of the parsing phase will be a \gls{syntaxtree} which also means that every part of the source code is parsed in this step. This phase encompasses the concepts of lexical analysis (understanding individual words) and syntactic analysis (understanding sentences). It is in this phase that syntax errors will be caught and no further analysis on those nodes is required. The parser is able to handle invalid code through two approaches: \parencite{Ebeid2013}
 
 \begin{itemize}
 \item If it can make a guess as to what token should be expected, a missing token will be inserted and have its \texttt{IsMissing} property set
 \item Otherwise it can also skip tokens and add them as trivia until it finds a location where parsing can continue
 \end{itemize}
+\end{minipage}
 
 \subsection{Declaration phase}
 \label{sec:declaration-phase}
 
-Once the \gls{syntaxtree} has been constructed in the parsing phase, the declaration phase will add meaning to all the nodes. Imagine going from a blank \gls{syntaxtree} to a \gls{syntaxtree} that uses syntax highlighting: that happens here. Like the parsing phase, this step is executed for all tokens in the \gls{syntaxtree} and has as result a look-up table with the created symbols\footnote{http://stackoverflow.com/a/10183455/1864167}. In the next phase, these constructed symbols can be used further. This phase is together with the next one a part of the semantic analysis concept. This step will perform more complicated analysis by verifying the parsed symbols adhere to the C\# Language Specification.
+Once the \gls{syntaxtree} has been constructed in the parsing phase, the declaration phase will add meaning to all the nodes. Imagine going from a blank \gls{syntaxtree} to a \gls{syntaxtree} that uses syntax highlighting: that happens here. Like the parsing phase, this step is executed for all tokens in the \gls{syntaxtree} and has as result a look-up table with the created symbols\footnote{\url{http://stackoverflow.com/a/10183455/1864167}}. In the next phase, these constructed symbols can be used further. This phase is together with the next one a part of the semantic analysis concept. This step will perform more complicated analysis by verifying the parsed symbols adhere to the C\# Language Specification.
 
 \subsection{Binding phase}
 \label{sec:binding-phase}

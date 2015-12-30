@@ -43,9 +43,7 @@ A \gls{syntaxtree}represents at the highest level a single top-level type (class
 
 A syntax node is an element of the tree that is always the parent to other nodes or to tokens (also known as 'non-terminal') and represents an expression or a statement. 
 
-Syntax nodes are defined in the Syntax.xml\footnote{https://github.com/dotnet/roslyn/blob/master/src/Compilers/CSharp/Portable/Syntax/Syntax.xml} file which generates classes that represent the relationship between all kinds of syntax nodes. 
-
-[More info on syntax.xml]
+Syntax nodes are defined in the Syntax.xml\footnote{\url{https://github.com/dotnet/roslyn/blob/master/src/Compilers/CSharp/Portable/Syntax/Syntax.xml}} file which generates classes that represent the relationship between all kinds of syntax nodes. 
 
 \subsection{Syntax Token}
 \label{sec:syntax-token}
@@ -54,8 +52,6 @@ Syntax tokens are what make up the individual, small pieces of the code. Whereas
 A syntax token can be a keyword, identifier, literal and punctuation and only exists as a leaf in the tree: it will never be the parent of another node or token.
 
 Contrary to syntax nodes, syntax tokens are not represented by separate classes. Instead, a single struct exists which can be differentiated based on its \texttt{Kind} property. 
-
-[Look it up][Syntax.xml?]
 
 \subsection{Syntax Trivia}
 \label{sec:syntax-trivia}
