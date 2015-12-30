@@ -8,7 +8,7 @@ A \gls{compiler} is a complicated application and consists of many different ser
 
 This is the first phase and receives the source code. Here, the source is tokenized into syntactical constructs according to the C\# Language Specification. This process is performed by two important classes: \texttt{Lexer.cs} and \texttt{LanguageParser.cs}. Both services their function overlaps largely but the lexer works at a lower level than the \gls{parser}: while the lexer can give meaning to certain symbols (not to be confused with the symbols in section \ref{sec:declaration-phase}) such as operators, the parser is able to combine multiple tokens and construct larger syntactical constructs such as expressions.\parencite{Studencki2010}
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{.95\linewidth}
 The eventual result of the parsing phase will be a \gls{syntaxtree} which also means that every part of the source code is parsed in this step. This phase encompasses the concepts of lexical analysis (understanding individual words) and syntactic analysis (understanding sentences). It is in this phase that syntax errors will be caught and no further analysis on those nodes is required. The parser is able to handle invalid code through two approaches: \parencite{Ebeid2013}
 
 \begin{itemize}

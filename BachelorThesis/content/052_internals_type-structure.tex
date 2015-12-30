@@ -29,7 +29,7 @@ which will result in the tree as shown in figure \ref{fig:tree-structure-class-d
 
 A \gls{syntaxtree}represents at the highest level a single top-level type (class or struct) with all its containing members -- fields, methods and nested types. Multiple \glspl{syntaxtree} can be grouped in a compilation. It is however not a requirement to represent a type when parsing a \gls{syntaxtree}: any kind of statement or expression can be parsed and represented in a \gls{syntaxtree}. In the end, every syntax node represents a tree of itself. This idea of trees comprised of other trees is what enables interesting performance optimizations (more on that later). 
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{.95\linewidth}
 \Glspl{syntaxtree} have a few very important properties:
 
 \begin{itemize}

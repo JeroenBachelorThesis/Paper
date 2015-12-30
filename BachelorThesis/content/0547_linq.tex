@@ -22,6 +22,8 @@ It's already clear that the main idea here is minimizing allocations made -- an 
 
 The concern here is that \gls{linq} adds an unacceptable overhead in the team's eyes. This overhead is inherent to \gls{linq}: you make a trade-off between memory and performance impact and instead end up with much more readable code. 
 
+\newpage
+
 As means of a simple test, we'll take a look at a snippet of code and its \gls{linq} alternative and compare their memory impact. We'll create two memory snapshots and see how many extra objects have been created for each implementation. It should obviously be noted that not all \gls{linq} statements are equally wasteful and in some scenarios \gls{linq} can even make sure there is less memory impact.
 
 The code we use to test can be found in listing \ref{lst:linq-memory} and adds 3 items from one list to another based on a certain condition. One approach uses a \gls{linq} query while the other uses a \texttt{foreach} loop which is basically the unrolled equivalent of the former. The heap snapshots in figures \ref{img:performance-linq-memlinq} and \ref{img:performance-linq-memloop} give use a clear view of what objects are being allocated along the way: we can see that constructing the \gls{linq} query creates two new objects of types \texttt{Enumerable+WhereListIterator<Int32>} and \texttt{Func<Int32, Boolean>}, representing the \texttt{Where} structure and the where condition respectively. Additionally there is an object \texttt{HandleCollector+HandleType} which is overhead created by the \glslink{gc}{GC}. 

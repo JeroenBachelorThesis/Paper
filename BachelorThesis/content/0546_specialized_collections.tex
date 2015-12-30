@@ -12,7 +12,7 @@ In this case, we can see a performance consideration in the way it stores the al
 
 \clearpage
 
-\begin{minipage}{\linewidth}
+\begin{minipage}{.95\linewidth}
 We can see this consideration reflected when we try to add a new spelling to a given key:
 
 \lstset{style=csharp, caption={IdentifierCollection.AddAdditionalSpelling}}
@@ -53,7 +53,7 @@ Notice also the note on line 20: smart usage of existing collections reduces the
 \subsubsection{CachingDictionary}
 \label{sec:spec-coll-cachingdictionary}
 
-Another implementation is the \texttt{CachingDictionary}. As its name indicates, it represents an in-memory caching mechanism based on the \texttt{Dictionary} collection. There is a very interesting implementation detail here: the backing dictionary is a \texttt{ConcurrentDictionary} meaning its exposed methods are \gls{threadsafe}. However, when the backing dictionary is full, it actually swaps that out for a normal \texttt{Dictionary} to allow for less-expensive read-operations without the thread-safety overhead.
+Another implementation is the \texttt{CachingDictionary}. As its name indicates, it represents an in-memory caching mechanism based on the \texttt{Dictionary} collection. There is a very interesting implementation detail here: the backing dictionary is a \\ \texttt{ConcurrentDictionary} meaning its exposed methods are \gls{threadsafe}. However, when the backing dictionary is full, it actually swaps that out for a normal \texttt{Dictionary} to allow for less-expensive read-operations without the thread-safety overhead.
 
 \lstset{style=csharp, caption={CachingDictionary.IsNotFullyPopulatedMap}}
 \begin{lstlisting}

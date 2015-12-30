@@ -4,7 +4,7 @@
 \epigraph{With the number of dependencies present in large software projects, there is no way any amount of global surveillance, network censorship, machine isolation, or firewalling can sufficiently protect the software development process of widely deployed software projects in order to prevent scenarios where \gls{malware} sneaks into a development dependency through an exploit in combination with code injection, and makes its way into the build process of software that is critical to the function of the world economy.}
 {\textit{Mike Perry \\ \footnotesize{Deterministic Builds Part One: Cyberwar and Global Compromise\protect\footnotemark}}}
 
-\footnotetext{\url{https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise}}
+\footnotetext{\url{https://blog.torproject.org/blog/deterministic-builds- \\ part-one-cyberwar-and-global-compromise}}
 
 When it comes to security, one of the main guarantees you're interested is that the the file you have locally is the same as what has been audited by the vendor and/or community. A popular way to do this is by having the vendor/community create a hash of the application and store it publicly. Afterwards the user can download the binaries or source files (which can be anything from a small plugin to a full-fledged application), generate a hash from those files using the same algorithm and compare the results. Ideally, these two hashcodes should be the same. If they are not the same, there are three possible causes:
 
