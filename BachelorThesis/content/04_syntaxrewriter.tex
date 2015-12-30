@@ -7,7 +7,10 @@ A common dispute\footnote{\url{http://stackoverflow.com/q/4540146/1864167}} betw
 
 Just like the SyntaxWalker, we have to start by parsing our source code as a \gls{syntaxtree}. Once we have that, we do the same thing as we did before: retrieve the root node and start traversing your tree from there. After all defined transformations have been applied, we will format the newly generated tree and display it (listing \ref{lst:syntaxrewriter-getting-started}). Important to note: the tree we pass in and get back are \textit{not} the same: everything is \gls{immutable} in Roslyn (more on that in section \ref{sec:syntax-tree}).
 
+\clearpage
+
 \lstset{style=csharp, caption={Getting started with a SyntaxRewriter}}
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[label={lst:syntaxrewriter-getting-started}]
 const string source = @"
 	public class MyOuterClass
@@ -29,6 +32,7 @@ var rewriter = new MyRewriter().Visit(tree.GetRoot());
 var formattedTree = Formatter.Format(rewriter, Formatter.Annotation, new AdhocWorkspace());
 Console.WriteLine(formattedTree.ToFullString());
 \end{lstlisting}
+\end{minipage}
 
 When you think of a field declaration it (typically) consists of several aspects. Take the following line for example: 
 
@@ -54,7 +58,7 @@ y = 10 	// Second declarator
 
 The importance of realizing everything is \gls{immutable} really shows itself in listing \ref{lst:syntaxrewriter-implementing-syntaxrewriter}. Here we override the \texttt{VisitFieldDeclaration} method which is triggered every time the rewriter comes across a field. We can also see that the method returns a \texttt{SyntaxNode} which will be the \texttt{FieldDeclarationSyntax} we construct with the new identifier.
 
-When we look at the implementation of this method we can distinguish a few steps:
+\noindent When we look at the implementation of this method we can distinguish a few steps:
 
 \begin{itemize}
 \item Create a container to store declarators
@@ -112,7 +116,7 @@ public override SyntaxNode VisitFieldDeclaration(FieldDeclarationSyntax node)
 }
 \end{lstlisting}
 
-
+\begin{minipage}{\linewidth}
 \noindent The resulting source code after our transformation can be seen in figure \ref{syntaxrewriter-results}.
 
 There are a lot of interesting use cases this opens up. Think for example about a build system where every user specifies their preferred naming conventions and when checking in and checking out source code, it will automatically transform it to the requested representation. This would eliminate the eternal discussion about coding styles entirely! Large refactorings are made easier by this as well: if you change from one convention or idiom to another, creating a SyntaxRewriter might take away a lot of the pain that typically comes with something like that.
@@ -123,3 +127,4 @@ There are a lot of interesting use cases this opens up. Think for example about 
 \caption[Renaming fields with a SyntaxRewriter]{Renaming fields with a SyntaxRewriter}
 \label{syntaxrewriter-results}
 \end{figure}
+\end{minipage}
