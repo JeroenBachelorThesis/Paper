@@ -226,7 +226,7 @@ class MyClass
 
 \begin{minipage}{\linewidth}
 \textbf{Conclusion:} The first parsing session creates a lot of different objects while the next session only creates a relative tiny amount of new objects. An interesting aspect to note here is the kind of objects we see created in that first run (see figure \ref{img:performance-node-reuse-scenario1-2}): every token is cached when that first parsing session starts which causes a lot of initial allocations. 
-When we look further down the list of allocated objects we also see caches, the parser, specific object pools, factories and a lot more. However when we now look at the second parsing session and see how it affects the heap we see none of this: there are a few new nodes representing the broad lines of the tree but no new tokens, identifiers, parsers, caches, etc have been allocated.
+When we look further down the list of allocated objects we also see caches, the parser, specific object pools, factories and a lot more. However, when we now look at the second parsing session and see how it affects the heap we see none of this: there are a few new nodes representing the broad lines of the tree but no new tokens, identifiers, parsers, caches, etc have been allocated.
 \end{minipage}
 
 
